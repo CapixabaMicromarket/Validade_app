@@ -25,396 +25,134 @@
     --radius-lg: 14px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--cinza-bg);
-    color: var(--txt-pri);
-    min-height: 100vh;
-  }
-
-  /* ── TELA ── */
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--cinza-bg); color: var(--txt-pri); min-height: 100vh; }
   .tela { display: none; }
   .tela.ativa { display: block; }
 
-  /* ── GESTOR ── */
-  .gestor-wrap {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 24px 16px 40px;
-  }
-  .logo {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    color: var(--verde);
-    margin-bottom: 24px;
-  }
-  h1 { font-size: 22px; font-weight: 600; color: var(--txt-pri); margin-bottom: 6px; }
-  .sub { font-size: 14px; color: var(--txt-sec); margin-bottom: 28px; line-height: 1.5; }
+  /* LOADING */
+  .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; gap: 12px; }
+  .loading-overlay.hidden { display: none; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--cinza-borda); border-top-color: var(--verde); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-txt { font-size: 14px; color: var(--txt-sec); }
 
+  /* GESTOR */
+  .gestor-wrap { max-width: 480px; margin: 0 auto; padding: 24px 16px 40px; }
+  .logo { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--verde); margin-bottom: 24px; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .sub { font-size: 14px; color: var(--txt-sec); margin-bottom: 28px; line-height: 1.5; }
   .campo { margin-bottom: 16px; }
   .campo label { display: block; font-size: 12px; font-weight: 600; color: var(--txt-sec); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
-  .campo input, .campo select, .campo textarea {
-    width: 100%;
-    padding: 11px 13px;
-    border: 1px solid var(--cinza-borda);
-    border-radius: var(--radius);
-    font-size: 15px;
-    color: var(--txt-pri);
-    background: var(--cinza-card);
-    outline: none;
-    font-family: inherit;
-    transition: border-color .15s;
-  }
-  .campo input:focus, .campo select:focus, .campo textarea:focus {
-    border-color: var(--verde);
-  }
+  .campo input, .campo textarea { width: 100%; padding: 11px 13px; border: 1px solid var(--cinza-borda); border-radius: var(--radius); font-size: 15px; color: var(--txt-pri); background: var(--cinza-card); outline: none; font-family: inherit; transition: border-color .15s; }
+  .campo input:focus, .campo textarea:focus { border-color: var(--verde); }
   .campo textarea { resize: vertical; min-height: 180px; font-size: 13px; line-height: 1.6; }
-
   .hint { font-size: 12px; color: var(--txt-muted); margin-top: 5px; }
-
-  .btn-gerar {
-    width: 100%;
-    padding: 14px;
-    background: var(--verde);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: opacity .15s;
-  }
-  .btn-gerar:active { opacity: .85; }
+  .btn-gerar { width: 100%; padding: 14px; background: var(--verde); color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
   .btn-gerar:disabled { opacity: .4; cursor: default; }
-
-  .link-box {
-    display: none;
-    background: var(--verde-claro);
-    border: 1px solid var(--verde-borda);
-    border-radius: var(--radius-lg);
-    padding: 16px;
-    margin-top: 20px;
-  }
+  .link-box { display: none; background: var(--verde-claro); border: 1px solid var(--verde-borda); border-radius: var(--radius-lg); padding: 16px; margin-top: 20px; }
   .link-box.visivel { display: block; }
   .link-box .label { font-size: 12px; font-weight: 600; color: #0F6E56; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
-  .link-url {
-    font-size: 13px;
-    color: #085041;
-    word-break: break-all;
-    background: #fff;
-    border-radius: 7px;
-    padding: 10px 12px;
-    border: 1px solid var(--verde-borda);
-    margin-bottom: 10px;
-    font-family: monospace;
-  }
+  .link-url { font-size: 13px; color: #085041; word-break: break-all; background: #fff; border-radius: 7px; padding: 10px 12px; border: 1px solid var(--verde-borda); margin-bottom: 10px; font-family: monospace; }
   .btn-row { display: flex; gap: 8px; }
-  .btn-sec {
-    flex: 1;
-    padding: 10px;
-    border-radius: var(--radius);
-    border: 1px solid var(--cinza-borda-forte);
-    background: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    color: var(--txt-pri);
-    transition: background .15s;
-  }
-  .btn-sec:active { background: var(--cinza-bg); }
+  .btn-sec { flex: 1; padding: 10px; border-radius: var(--radius); border: 1px solid var(--cinza-borda-forte); background: #fff; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--txt-pri); }
   .btn-sec.verde { background: var(--verde); color: #fff; border-color: var(--verde); }
 
-  /* ── ABASTECEDOR ── */
-  .header-conf {
-    background: #fff;
-    border-bottom: 1px solid var(--cinza-borda);
-    padding: 14px 16px 12px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .header-top { display: flex; align-items: center; justify-content: space-between; }
+  /* ABASTECEDOR */
+  .header-conf { background: #fff; border-bottom: 1px solid var(--cinza-borda); padding: 14px 16px 12px; position: sticky; top: 0; z-index: 10; }
   .loja-nome { font-size: 17px; font-weight: 600; }
   .loja-meta { font-size: 12px; color: var(--txt-sec); margin-top: 2px; }
   .prog-wrap { margin-top: 10px; }
   .prog-nums { display: flex; justify-content: space-between; font-size: 12px; color: var(--txt-sec); margin-bottom: 4px; }
   .prog-bar { height: 5px; background: var(--cinza-bg); border-radius: 3px; overflow: hidden; }
   .prog-fill { height: 100%; background: var(--verde); border-radius: 3px; transition: width .3s; }
-
-  .filtros-wrap {
-    background: #fff;
-    border-bottom: 1px solid var(--cinza-borda);
-    padding: 8px 12px;
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-  }
-  .filtro-btn {
-    font-size: 12px;
-    padding: 5px 13px;
-    border-radius: 20px;
-    border: 1px solid var(--cinza-borda);
-    background: #fff;
-    color: var(--txt-sec);
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
+  .filtros-wrap { background: #fff; border-bottom: 1px solid var(--cinza-borda); padding: 8px 12px; display: flex; gap: 6px; overflow-x: auto; }
+  .filtro-btn { font-size: 12px; padding: 5px 13px; border-radius: 20px; border: 1px solid var(--cinza-borda); background: #fff; color: var(--txt-sec); cursor: pointer; white-space: nowrap; flex-shrink: 0; }
   .filtro-btn.ativo { background: var(--verde-claro); border-color: var(--verde-borda); color: #085041; font-weight: 500; }
-
-  .lista-wrap { padding: 10px 12px 120px; }
-  .grupo-titulo {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--txt-muted);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    padding: 10px 2px 5px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .badge-urg {
-    font-size: 10px;
-    background: var(--vermelho-claro);
-    color: var(--vermelho);
-    padding: 2px 7px;
-    border-radius: 8px;
-    text-transform: none;
-    font-weight: 600;
-    letter-spacing: 0;
-  }
-
-  .item-card {
-    background: var(--cinza-card);
-    border: 1px solid var(--cinza-borda);
-    border-radius: var(--radius-lg);
-    padding: 12px 13px;
-    margin-bottom: 6px;
-    transition: border-color .2s;
-  }
+  .lista-wrap { padding: 10px 12px 140px; }
+  .grupo-titulo { font-size: 11px; font-weight: 600; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .06em; padding: 10px 2px 5px; display: flex; align-items: center; gap: 6px; }
+  .badge-urg { font-size: 10px; background: var(--vermelho-claro); color: var(--vermelho); padding: 2px 7px; border-radius: 8px; text-transform: none; font-weight: 600; letter-spacing: 0; }
+  .item-card { background: var(--cinza-card); border: 1px solid var(--cinza-borda); border-radius: var(--radius-lg); padding: 12px 13px; margin-bottom: 6px; transition: border-color .2s; }
   .item-card.s-retirado { border-color: var(--verde); }
   .item-card.s-nao-retirou { border-color: var(--ambar); }
   .item-card.s-nao-tinha { opacity: .5; }
-
   .item-topo { display: flex; align-items: flex-start; gap: 8px; }
   .item-nome { font-size: 14px; line-height: 1.35; flex: 1; }
   .item-nome.riscado { text-decoration: line-through; color: var(--txt-muted); }
-  .vence-chip {
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 7px;
-    font-weight: 600;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
+  .vence-chip { font-size: 10px; padding: 3px 8px; border-radius: 7px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
   .vc-venc { background: var(--vermelho-claro); color: var(--vermelho); }
   .vc-hoje { background: var(--ambar-claro); color: #854F0B; }
   .vc-ok { background: var(--verde-claro); color: #085041; }
-
-  .item-acoes {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 5px;
-    margin-top: 10px;
-  }
-  .acao-btn {
-    padding: 8px 4px;
-    border-radius: 8px;
-    border: 1px solid var(--cinza-borda);
-    background: var(--cinza-bg);
-    color: var(--txt-sec);
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: center;
-    line-height: 1.3;
-    transition: all .15s;
-  }
+  .item-acoes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px; }
+  .acao-btn { padding: 8px 4px; border-radius: 8px; border: 1px solid var(--cinza-borda); background: var(--cinza-bg); color: var(--txt-sec); font-size: 11px; font-weight: 500; cursor: pointer; text-align: center; line-height: 1.3; }
   .acao-btn.a-retirado { background: var(--verde-claro); border-color: var(--verde-borda); color: #085041; }
   .acao-btn.a-nao-retirou { background: var(--ambar-claro); border-color: var(--ambar-borda); color: #854F0B; }
   .acao-btn.a-nao-tinha { background: #F1EFE8; border-color: var(--cinza-borda-forte); color: var(--txt-sec); }
-
-  .qtd-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 9px;
-    padding-top: 9px;
-    border-top: 1px solid var(--cinza-borda);
-  }
+  .qtd-row { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--cinza-borda); }
   .qtd-label { font-size: 12px; color: var(--txt-sec); }
   .qtd-ctrl { display: flex; align-items: center; gap: 10px; }
-  .qtd-btn {
-    width: 30px; height: 30px;
-    border-radius: 8px;
-    border: 1px solid var(--cinza-borda-forte);
-    background: #fff;
-    font-size: 18px;
-    font-weight: 400;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--txt-pri);
-    line-height: 1;
-  }
+  .qtd-btn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--cinza-borda-forte); background: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--txt-pri); }
   .qtd-num { font-size: 16px; font-weight: 600; min-width: 22px; text-align: center; }
-
-  .rodape-conf {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: #fff;
-    border-top: 1px solid var(--cinza-borda);
-    padding: 12px 16px 20px;
-  }
-  .resumo-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px 12px;
-    margin-bottom: 10px;
-  }
-  .resumo-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--txt-sec);
-  }
+  .rodape-conf { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--cinza-borda); padding: 12px 16px 20px; }
+  .resumo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-bottom: 10px; }
+  .resumo-item { display: flex; justify-content: space-between; font-size: 12px; color: var(--txt-sec); }
   .resumo-item span:last-child { font-weight: 600; }
   .r-verde { color: var(--verde) !important; }
   .r-ambar { color: #854F0B !important; }
-  .btn-encerrar {
-    width: 100%;
-    padding: 13px;
-    background: var(--verde);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-  }
+  .btn-encerrar { width: 100%; padding: 13px; background: var(--verde); color: #fff; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; }
   .btn-encerrar:disabled { opacity: .4; cursor: default; }
 
-  /* ── RELATÓRIO ── */
-  .relatorio-wrap {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 24px 16px 40px;
-  }
-  .rel-header {
-    background: var(--verde-claro);
-    border: 1px solid var(--verde-borda);
-    border-radius: var(--radius-lg);
-    padding: 16px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
+  /* RELATÓRIO */
+  .relatorio-wrap { max-width: 480px; margin: 0 auto; padding: 24px 16px 40px; }
+  .rel-header { background: var(--verde-claro); border: 1px solid var(--verde-borda); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px; text-align: center; }
   .rel-icone { font-size: 32px; margin-bottom: 6px; }
   .rel-titulo { font-size: 18px; font-weight: 600; color: #085041; }
   .rel-sub { font-size: 13px; color: #0F6E56; margin-top: 2px; }
-  .rel-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  .stat-card {
-    background: #fff;
-    border: 1px solid var(--cinza-borda);
-    border-radius: var(--radius);
-    padding: 12px;
-    text-align: center;
-  }
+  .rel-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+  .stat-card { background: #fff; border: 1px solid var(--cinza-borda); border-radius: var(--radius); padding: 12px; text-align: center; }
   .stat-num { font-size: 24px; font-weight: 600; }
   .stat-label { font-size: 11px; color: var(--txt-sec); margin-top: 2px; }
   .rel-secao { margin-bottom: 16px; }
-  .rel-secao-titulo {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--txt-sec);
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--cinza-borda);
-  }
-  .rel-item {
-    font-size: 13px;
-    padding: 6px 0;
-    border-bottom: 1px solid var(--cinza-bg);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .rel-item-nome { color: var(--txt-pri); }
-  .rel-item-detalhe { font-size: 12px; color: var(--txt-sec); }
-  .btn-wpp {
-    width: 100%;
-    padding: 14px;
-    background: #25D366;
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
-  .btn-nova {
-    width: 100%;
-    padding: 12px;
-    background: #fff;
-    color: var(--txt-pri);
-    border: 1px solid var(--cinza-borda-forte);
-    border-radius: var(--radius);
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-
+  .rel-secao-titulo { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--txt-sec); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--cinza-borda); }
+  .rel-item { font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--cinza-bg); display: flex; justify-content: space-between; align-items: center; }
+  .btn-wpp { width: 100%; padding: 14px; background: #25D366; color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
+  .btn-nova { width: 100%; padding: 12px; background: #fff; color: var(--txt-pri); border: 1px solid var(--cinza-borda-forte); border-radius: var(--radius); font-size: 15px; font-weight: 500; cursor: pointer; }
   .vazio { text-align: center; padding: 32px 16px; color: var(--txt-muted); font-size: 14px; }
-
-  @media (max-width: 360px) {
-    .item-acoes { grid-template-columns: 1fr 1fr; }
-    .acao-btn:last-child { grid-column: span 2; }
-  }
+  .erro-box { background: var(--vermelho-claro); border: 1px solid #f5c0c0; border-radius: var(--radius); padding: 12px 16px; margin: 16px; font-size: 13px; color: #a32d2d; }
 </style>
 </head>
 <body>
 
-<!-- ══════════ TELA GESTOR ══════════ -->
-<div id="tela-gestor" class="tela ativa">
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-txt">Carregando...</div>
+</div>
+
+<!-- GESTOR -->
+<div id="tela-gestor" class="tela">
 <div class="gestor-wrap">
   <div class="logo">Controle de Validade</div>
   <h1>Nova conferência</h1>
-  <p class="sub">Preencha os dados abaixo e gere o link para o abastecedor.</p>
-
+  <p class="sub">Preencha os dados e gere o link para o abastecedor conferir na loja.</p>
   <div class="campo">
     <label>Loja</label>
     <input type="text" id="inp-loja" placeholder="Ex: Costa Mare" />
   </div>
-
   <div class="campo">
     <label>Retirar vencidos até</label>
     <input type="date" id="inp-data" />
-    <p class="hint">Data da próxima visita de reabastecimento</p>
+    <p class="hint">Data imediatamente anterior à próxima visita</p>
   </div>
-
   <div class="campo">
     <label>Lista de produtos</label>
-    <textarea id="inp-lista" placeholder="Cole aqui a lista do WhatsApp ou digite um produto por linha.
+    <textarea id="inp-lista" placeholder="Cole a lista do WhatsApp ou digite um produto por linha.
 
 Exemplo:
 Cup Noodles carne defumada (vence dia 21/08)
 Miojo Nissin carne (vence dia 21/08)
 Hot Pocket picanha (vence dia 22/08)"></textarea>
-    <p class="hint">Aceita o formato atual do WhatsApp com os parênteses de data.</p>
+    <p class="hint">Aceita o formato atual com os parênteses de data.</p>
   </div>
-
-  <button class="btn-gerar" id="btn-gerar" onclick="gerarLink()">Gerar link de conferência</button>
-
+  <button class="btn-gerar" onclick="gerarLink()">Gerar link de conferência</button>
   <div class="link-box" id="link-box">
     <div class="label">Link gerado — envie pelo WhatsApp</div>
     <div class="link-url" id="link-url"></div>
@@ -426,24 +164,16 @@ Hot Pocket picanha (vence dia 22/08)"></textarea>
 </div>
 </div>
 
-<!-- ══════════ TELA ABASTECEDOR ══════════ -->
+<!-- ABASTECEDOR -->
 <div id="tela-abast" class="tela">
   <div class="header-conf">
-    <div class="header-top">
-      <div>
-        <div class="loja-nome" id="ab-loja">—</div>
-        <div class="loja-meta" id="ab-meta">—</div>
-      </div>
-    </div>
+    <div class="loja-nome" id="ab-loja">—</div>
+    <div class="loja-meta" id="ab-meta">—</div>
     <div class="prog-wrap">
-      <div class="prog-nums">
-        <span>Conferidos</span>
-        <span id="ab-cont">0 / 0</span>
-      </div>
+      <div class="prog-nums"><span>Conferidos</span><span id="ab-cont">0 / 0</span></div>
       <div class="prog-bar"><div class="prog-fill" id="ab-barra" style="width:0%"></div></div>
     </div>
   </div>
-
   <div class="filtros-wrap">
     <button class="filtro-btn ativo" onclick="filtrar('todos',this)">Todos</button>
     <button class="filtro-btn" onclick="filtrar('pendente',this)">Pendentes</button>
@@ -451,9 +181,7 @@ Hot Pocket picanha (vence dia 22/08)"></textarea>
     <button class="filtro-btn" onclick="filtrar('nao-retirou',this)">Não retirou</button>
     <button class="filtro-btn" onclick="filtrar('nao-tinha',this)">Sem estoque</button>
   </div>
-
   <div class="lista-wrap" id="ab-lista"></div>
-
   <div class="rodape-conf">
     <div class="resumo-grid">
       <div class="resumo-item"><span>Retirados</span><span id="r-ret" class="r-verde">0</span></div>
@@ -465,7 +193,7 @@ Hot Pocket picanha (vence dia 22/08)"></textarea>
   </div>
 </div>
 
-<!-- ══════════ TELA RELATÓRIO ══════════ -->
+<!-- RELATÓRIO -->
 <div id="tela-relatorio" class="tela">
 <div class="relatorio-wrap">
   <div class="rel-header">
@@ -473,62 +201,57 @@ Hot Pocket picanha (vence dia 22/08)"></textarea>
     <div class="rel-titulo" id="rel-titulo">Conferência encerrada</div>
     <div class="rel-sub" id="rel-sub">—</div>
   </div>
-
   <div class="rel-stats">
-    <div class="stat-card">
-      <div class="stat-num r-verde" id="rs-ret">0</div>
-      <div class="stat-label">Retirados</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num r-ambar" id="rs-nret">0</div>
-      <div class="stat-label">Não retirou</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="rs-sem">0</div>
-      <div class="stat-label">Sem estoque</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" style="color:var(--vermelho)" id="rs-pend">0</div>
-      <div class="stat-label">Não conferidos</div>
-    </div>
+    <div class="stat-card"><div class="stat-num r-verde" id="rs-ret">0</div><div class="stat-label">Retirados</div></div>
+    <div class="stat-card"><div class="stat-num r-ambar" id="rs-nret">0</div><div class="stat-label">Não retirou</div></div>
+    <div class="stat-card"><div class="stat-num" id="rs-sem">0</div><div class="stat-label">Sem estoque</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--vermelho)" id="rs-pend">0</div><div class="stat-label">Não conferidos</div></div>
   </div>
-
   <div id="rel-corpo"></div>
-
   <button class="btn-wpp" onclick="enviarWpp()">📲 Enviar relatório pelo WhatsApp</button>
   <button class="btn-nova" onclick="novaConferencia()">+ Nova conferência</button>
 </div>
 </div>
 
-<script>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAOJpE4-535Ea18YOiMq5ute4dsRbH6ybc",
+  authDomain: "validade-app-f43b0.firebaseapp.com",
+  projectId: "validade-app-f43b0",
+  storageBucket: "validade-app-f43b0.firebasestorage.app",
+  messagingSenderId: "436989185322",
+  appId: "1:436989185322:web:f79ed5cab622ff8ade6253"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // ── Estado global ──
 let conferencia = null;
 let filtroAtivo = 'todos';
+let confId = null;
 
 // ── Utilitários ──
 function parseData(str) {
-  // "21/08" ou "21/08/2026"
   const m = str.match(/(\d{1,2})\/(\d{2})(?:\/(\d{4}))?/);
   if (!m) return null;
-  const ano = m[3] ? parseInt(m[3]) : 2026;
-  return { dia: parseInt(m[1]), mes: parseInt(m[2]), ano };
+  return { dia: parseInt(m[1]), mes: parseInt(m[2]), ano: m[3] ? parseInt(m[3]) : 2026 };
 }
 
 function parseLista(texto) {
   return texto.split('\n')
-    .map(l => l.trim())
-    .filter(l => l && !l.startsWith('*') === false || l.match(/\S/))
+    .map(l => l.replace(/^[\*\-\•\d+\.]\s*/, '').trim())
+    .filter(Boolean)
     .map(l => {
-      // Remove marcadores de lista
-      l = l.replace(/^[\*\-\•\d+\.]\s*/, '').trim();
-      if (!l) return null;
-      // Extrai data entre parênteses: (vence dia 21/08) ou (vence 21/08) ou (21/08)
       const mData = l.match(/\((?:vence(?:\s+dia)?\s*)?(\d{1,2}\/\d{2}(?:\/\d{4})?)\)/i);
       const data = mData ? parseData(mData[1]) : null;
       const nome = l.replace(/\(.*?\)/g, '').trim();
       return nome ? { nome, data } : null;
-    })
-    .filter(Boolean);
+    }).filter(Boolean);
 }
 
 function hoje() {
@@ -557,103 +280,100 @@ function chipVence(data) {
   return `<span class="vence-chip vc-ok">${fmtData(data)}</span>`;
 }
 
-// ── Salva/carrega estado ──
-function salvar() {
-  if (!conferencia) return;
-  try { localStorage.setItem('conf_' + conferencia.id, JSON.stringify(conferencia)); } catch(e) {}
+function loading(show, txt) {
+  const el = document.getElementById('loading');
+  el.classList.toggle('hidden', !show);
+  if (txt) el.querySelector('.loading-txt').textContent = txt;
 }
 
-function carregar(id) {
-  try {
-    const s = localStorage.getItem('conf_' + id);
-    return s ? JSON.parse(s) : null;
-  } catch(e) { return null; }
+function mostrarTela(id) {
+  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+  document.getElementById(id).classList.add('ativa');
+  window.scrollTo(0, 0);
 }
 
-// ── GESTOR: gerar link ──
-function gerarLink() {
+// ── GESTOR ──
+window.gerarLink = async function() {
   const loja = document.getElementById('inp-loja').value.trim();
   const dataLimite = document.getElementById('inp-data').value;
   const listaTexto = document.getElementById('inp-lista').value.trim();
-
-  if (!loja || !dataLimite || !listaTexto) {
-    alert('Preencha todos os campos antes de gerar o link.');
-    return;
-  }
-
+  if (!loja || !dataLimite || !listaTexto) { alert('Preencha todos os campos.'); return; }
   const produtos = parseLista(listaTexto);
-  if (produtos.length === 0) {
-    alert('Não foi possível identificar produtos na lista. Verifique o formato.');
-    return;
-  }
+  if (!produtos.length) { alert('Nenhum produto identificado. Verifique o formato.'); return; }
 
-  const id = 'c' + Date.now().toString(36);
+  loading(true, 'Salvando no servidor...');
+  const id = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
   const [ano, mes, dia] = dataLimite.split('-');
-  conferencia = {
-    id,
-    loja,
+  const dados = {
+    id, loja,
     dataLimite: { dia: parseInt(dia), mes: parseInt(mes), ano: parseInt(ano) },
     produtos,
     estado: produtos.map(() => ({ status: 'pendente', qtd: 1 })),
     encerrada: false,
     criadaEm: Date.now()
   };
-  salvar();
+  try {
+    await setDoc(doc(db, 'conferencias', id), dados);
+    const url = window.location.origin + window.location.pathname + '?conf=' + id;
+    document.getElementById('link-url').textContent = url;
+    document.getElementById('link-box').classList.add('visivel');
+    window._linkAtual = url;
+    window._lojaAtual = loja;
+  } catch(e) {
+    alert('Erro ao salvar. Verifique sua conexão.');
+    console.error(e);
+  }
+  loading(false);
+};
 
-  const url = window.location.origin + window.location.pathname + '?conf=' + id;
-  document.getElementById('link-url').textContent = url;
-  document.getElementById('link-box').classList.add('visivel');
-  window._linkAtual = url;
-  window._lojaAtual = loja;
-}
+window.copiarLink = function() {
+  navigator.clipboard.writeText(window._linkAtual || '').then(() => alert('Link copiado!'));
+};
 
-function copiarLink() {
-  navigator.clipboard.writeText(window._linkAtual || '').then(() => {
-    alert('Link copiado!');
-  });
-}
-
-function abrirWpp() {
-  const msg = encodeURIComponent(
-    '📋 *Conferência de validade — ' + (window._lojaAtual || '') + '*\n\nAcesse o link abaixo para conferir os produtos:\n' + (window._linkAtual || '')
-  );
+window.abrirWpp = function() {
+  const msg = encodeURIComponent('📋 *Conferência de validade — ' + (window._lojaAtual||'') + '*\n\nAcesse o link para conferir os produtos:\n' + (window._linkAtual||''));
   window.open('https://wa.me/?text=' + msg, '_blank');
-}
+};
 
-// ── ABASTECEDOR: render ──
-function setStatus(i, s) {
+// ── ABASTECEDOR ──
+window.setStatus = async function(i, s) {
   conferencia.estado[i].status = s;
-  salvar();
   renderAbast();
-}
+  await salvarEstado();
+};
 
-function setQtd(i, delta) {
+window.setQtd = async function(i, delta) {
   conferencia.estado[i].qtd = Math.max(1, (conferencia.estado[i].qtd || 1) + delta);
-  salvar();
   renderAbast();
+  await salvarEstado();
+};
+
+async function salvarEstado() {
+  if (!confId) return;
+  try {
+    await updateDoc(doc(db, 'conferencias', confId), { estado: conferencia.estado });
+  } catch(e) { console.error('Erro ao salvar:', e); }
 }
 
-function filtrar(tipo, el) {
+window.filtrar = function(tipo, el) {
   filtroAtivo = tipo;
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
   el.classList.add('ativo');
   renderAbast();
-}
+};
 
 function renderAbast() {
   const c = conferencia;
-  const total = c.produtos.length;
   const est = c.estado;
-
-  const conf = est.filter(e => e.status !== 'pendente').length;
-  const ret  = est.filter(e => e.status === 'retirado').length;
-  const nret = est.filter(e => e.status === 'nao-retirou').length;
-  const sem  = est.filter(e => e.status === 'nao-tinha').length;
-  const pend = total - conf;
+  const total = c.produtos.length;
+  const conf  = est.filter(e => e.status !== 'pendente').length;
+  const ret   = est.filter(e => e.status === 'retirado').length;
+  const nret  = est.filter(e => e.status === 'nao-retirou').length;
+  const sem   = est.filter(e => e.status === 'nao-tinha').length;
+  const pend  = total - conf;
 
   document.getElementById('ab-loja').textContent = c.loja;
-  document.getElementById('ab-meta').textContent =
-    'Retirar vencidos até ' + fmtData(c.dataLimite);
+  document.getElementById('ab-meta').textContent = 'Retirar vencidos até ' + fmtData(c.dataLimite);
   document.getElementById('ab-cont').textContent = conf + ' / ' + total;
   document.getElementById('ab-barra').style.width = Math.round(conf / total * 100) + '%';
   document.getElementById('r-ret').textContent  = ret;
@@ -663,11 +383,8 @@ function renderAbast() {
 
   const btn = document.getElementById('btn-encerrar');
   btn.disabled = conf === 0;
-  btn.textContent = pend > 0
-    ? 'Encerrar (' + pend + ' pendentes)'
-    : 'Encerrar conferência';
+  btn.textContent = pend > 0 ? `Encerrar (${pend} pendentes)` : 'Encerrar conferência';
 
-  // Agrupa por data
   const grupos = {};
   c.produtos.forEach((p, i) => {
     const s = est[i].status;
@@ -678,27 +395,22 @@ function renderAbast() {
   });
 
   const chaves = Object.keys(grupos).sort((a, b) => {
-    const da = grupos[a].data, db = grupos[b].data;
-    if (!da) return 1; if (!db) return -1;
-    if (da.ano !== db.ano) return da.ano - db.ano;
-    if (da.mes !== db.mes) return da.mes - db.mes;
-    return da.dia - db.dia;
+    const da = grupos[a].data, db2 = grupos[b].data;
+    if (!da) return 1; if (!db2) return -1;
+    if (da.ano !== db2.ano) return da.ano - db2.ano;
+    if (da.mes !== db2.mes) return da.mes - db2.mes;
+    return da.dia - db2.dia;
   });
 
   let html = '';
   chaves.forEach(k => {
     const g = grupos[k];
     const d = diasDiff(g.data);
-    const urg = d < 0 ? '<span class="badge-urg">Vencido</span>'
-              : d === 0 ? '<span class="badge-urg">Hoje</span>' : '';
+    const urg = d < 0 ? '<span class="badge-urg">Vencido</span>' : d === 0 ? '<span class="badge-urg">Hoje</span>' : '';
     html += `<div class="grupo-titulo">${k}${urg}</div>`;
-
     g.itens.forEach(p => {
-      const cls = p.s === 'retirado' ? 's-retirado'
-                : p.s === 'nao-retirou' ? 's-nao-retirou'
-                : p.s === 'nao-tinha' ? 's-nao-tinha' : '';
+      const cls = p.s === 'retirado' ? 's-retirado' : p.s === 'nao-retirou' ? 's-nao-retirou' : p.s === 'nao-tinha' ? 's-nao-tinha' : '';
       const nomeCls = p.s === 'nao-tinha' ? 'riscado' : '';
-
       html += `<div class="item-card ${cls}">
         <div class="item-topo">
           <div class="item-nome ${nomeCls}">${p.nome}</div>
@@ -709,8 +421,7 @@ function renderAbast() {
           <button class="acao-btn ${p.s==='nao-retirou'?'a-nao-retirou':''}" onclick="setStatus(${p.i},'nao-retirou')">— Não retirei</button>
           <button class="acao-btn ${p.s==='nao-tinha'?'a-nao-tinha':''}" onclick="setStatus(${p.i},'nao-tinha')">✕ Sem estoque</button>
         </div>
-        ${p.s === 'retirado' ? `
-        <div class="qtd-row">
+        ${p.s === 'retirado' ? `<div class="qtd-row">
           <span class="qtd-label">Quantidade retirada</span>
           <div class="qtd-ctrl">
             <button class="qtd-btn" onclick="setQtd(${p.i},-1)">−</button>
@@ -726,27 +437,27 @@ function renderAbast() {
   document.getElementById('ab-lista').innerHTML = html;
 }
 
-// ── Encerrar ──
-function encerrar() {
+window.encerrar = async function() {
   const pend = conferencia.estado.filter(e => e.status === 'pendente').length;
-  if (pend > 0) {
-    if (!confirm(pend + ' produto(s) ainda não conferidos. Deseja encerrar mesmo assim?')) return;
-  }
+  if (pend > 0 && !confirm(`${pend} produto(s) ainda não conferidos. Encerrar mesmo assim?`)) return;
+  loading(true, 'Salvando relatório...');
   conferencia.encerrada = true;
   conferencia.encerradaEm = Date.now();
-  salvar();
+  try {
+    await updateDoc(doc(db, 'conferencias', confId), { encerrada: true, encerradaEm: conferencia.encerradaEm, estado: conferencia.estado });
+  } catch(e) { console.error(e); }
+  loading(false);
   mostrarRelatorio();
-}
+};
 
-// ── Relatório ──
+// ── RELATÓRIO ──
 function mostrarRelatorio() {
   const c = conferencia;
   const est = c.estado;
-
-  const ret   = c.produtos.filter((_, i) => est[i].status === 'retirado');
-  const nret  = c.produtos.filter((_, i) => est[i].status === 'nao-retirou');
-  const sem   = c.produtos.filter((_, i) => est[i].status === 'nao-tinha');
-  const pend  = c.produtos.filter((_, i) => est[i].status === 'pendente');
+  const ret  = c.produtos.filter((_, i) => est[i].status === 'retirado');
+  const nret = c.produtos.filter((_, i) => est[i].status === 'nao-retirou');
+  const sem  = c.produtos.filter((_, i) => est[i].status === 'nao-tinha');
+  const pend = c.produtos.filter((_, i) => est[i].status === 'pendente');
 
   document.getElementById('rel-titulo').textContent = c.loja + ' — conferência encerrada';
   document.getElementById('rel-sub').textContent = 'Retirar vencidos até ' + fmtData(c.dataLimite);
@@ -756,141 +467,90 @@ function mostrarRelatorio() {
   document.getElementById('rs-pend').textContent = pend.length;
 
   let html = '';
-
   if (ret.length) {
-    html += `<div class="rel-secao">
-      <div class="rel-secao-titulo" style="color:var(--verde)">✓ Retirados (${ret.length})</div>`;
-    ret.forEach((p, ii) => {
-      const i = c.produtos.indexOf(p);
-      html += `<div class="rel-item">
-        <span class="rel-item-nome">${p.nome}</span>
-        <span class="rel-item-detalhe">${est[i].qtd || 1} un.</span>
-      </div>`;
-    });
+    html += `<div class="rel-secao"><div class="rel-secao-titulo" style="color:var(--verde)">✓ Retirados (${ret.length})</div>`;
+    ret.forEach(p => { const i = c.produtos.indexOf(p); html += `<div class="rel-item"><span>${p.nome}</span><span style="color:var(--txt-sec)">${est[i].qtd||1} un.</span></div>`; });
     html += '</div>';
   }
-
   if (nret.length) {
-    html += `<div class="rel-secao">
-      <div class="rel-secao-titulo" style="color:#854F0B">— Não retirou (${nret.length})</div>`;
-    nret.forEach(p => {
-      html += `<div class="rel-item">
-        <span class="rel-item-nome">${p.nome}</span>
-        <span class="rel-item-detalhe">${fmtData(p.data)}</span>
-      </div>`;
-    });
+    html += `<div class="rel-secao"><div class="rel-secao-titulo" style="color:#854F0B">— Não retirou (${nret.length})</div>`;
+    nret.forEach(p => { html += `<div class="rel-item"><span>${p.nome}</span><span style="color:var(--txt-sec)">${fmtData(p.data)}</span></div>`; });
     html += '</div>';
   }
-
   if (sem.length) {
-    html += `<div class="rel-secao">
-      <div class="rel-secao-titulo">✕ Sem estoque na loja (${sem.length})</div>`;
-    sem.forEach(p => {
-      html += `<div class="rel-item">
-        <span class="rel-item-nome">${p.nome}</span>
-        <span class="rel-item-detalhe">${fmtData(p.data)}</span>
-      </div>`;
-    });
+    html += `<div class="rel-secao"><div class="rel-secao-titulo">✕ Sem estoque (${sem.length})</div>`;
+    sem.forEach(p => { html += `<div class="rel-item"><span>${p.nome}</span><span style="color:var(--txt-sec)">${fmtData(p.data)}</span></div>`; });
     html += '</div>';
   }
-
   if (pend.length) {
-    html += `<div class="rel-secao">
-      <div class="rel-secao-titulo" style="color:var(--vermelho)">⚠ Não conferidos (${pend.length})</div>`;
-    pend.forEach(p => {
-      html += `<div class="rel-item">
-        <span class="rel-item-nome">${p.nome}</span>
-        <span class="rel-item-detalhe">${fmtData(p.data)}</span>
-      </div>`;
-    });
+    html += `<div class="rel-secao"><div class="rel-secao-titulo" style="color:var(--vermelho)">⚠ Não conferidos (${pend.length})</div>`;
+    pend.forEach(p => { html += `<div class="rel-item"><span>${p.nome}</span><span style="color:var(--txt-sec)">${fmtData(p.data)}</span></div>`; });
     html += '</div>';
   }
-
   document.getElementById('rel-corpo').innerHTML = html;
   mostrarTela('tela-relatorio');
 }
 
-function enviarWpp() {
-  const c = conferencia;
-  const est = c.estado;
+window.enviarWpp = function() {
+  const c = conferencia; const est = c.estado;
   const ret  = c.produtos.filter((_, i) => est[i].status === 'retirado');
   const nret = c.produtos.filter((_, i) => est[i].status === 'nao-retirou');
   const sem  = c.produtos.filter((_, i) => est[i].status === 'nao-tinha');
   const pend = c.produtos.filter((_, i) => est[i].status === 'pendente');
-
-  let msg = `🏪 *${c.loja}* — Conferência de validade\n`;
-  msg += `📅 Retirar vencidos até ${fmtData(c.dataLimite)}\n\n`;
-
-  if (ret.length) {
-    msg += `✅ *Retirados (${ret.length}):*\n`;
-    ret.forEach((p, ii) => {
-      const i = c.produtos.indexOf(p);
-      msg += `• ${p.nome} — ${est[i].qtd || 1} un.\n`;
-    });
-    msg += '\n';
-  }
-  if (nret.length) {
-    msg += `⚠️ *Não retirou (${nret.length}):*\n`;
-    nret.forEach(p => msg += `• ${p.nome}\n`);
-    msg += '\n';
-  }
-  if (sem.length) {
-    msg += `📭 *Sem estoque na loja (${sem.length}):*\n`;
-    sem.forEach(p => msg += `• ${p.nome}\n`);
-    msg += '\n';
-  }
-  if (pend.length) {
-    msg += `❌ *Não conferidos (${pend.length}):*\n`;
-    pend.forEach(p => msg += `• ${p.nome}\n`);
-  }
-
+  let msg = `🏪 *${c.loja}* — Conferência de validade\n📅 Vencidos até ${fmtData(c.dataLimite)}\n\n`;
+  if (ret.length)  { msg += `✅ *Retirados (${ret.length}):*\n`;  ret.forEach(p  => { const i=c.produtos.indexOf(p); msg+=`• ${p.nome} — ${est[i].qtd||1} un.\n`; }); msg+='\n'; }
+  if (nret.length) { msg += `⚠️ *Não retirou (${nret.length}):*\n`; nret.forEach(p => msg+=`• ${p.nome}\n`); msg+='\n'; }
+  if (sem.length)  { msg += `📭 *Sem estoque (${sem.length}):*\n`; sem.forEach(p  => msg+=`• ${p.nome}\n`); msg+='\n'; }
+  if (pend.length) { msg += `❌ *Não conferidos (${pend.length}):*\n`; pend.forEach(p => msg+=`• ${p.nome}\n`); }
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
-}
+};
 
-function novaConferencia() {
-  conferencia = null;
+window.novaConferencia = function() {
+  conferencia = null; confId = null;
   document.getElementById('inp-loja').value = '';
   document.getElementById('inp-data').value = '';
   document.getElementById('inp-lista').value = '';
   document.getElementById('link-box').classList.remove('visivel');
   mostrarTela('tela-gestor');
-}
+};
 
-// ── Navegação ──
-function mostrarTela(id) {
-  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-  document.getElementById(id).classList.add('ativa');
-  window.scrollTo(0, 0);
-}
-
-// ── Inicialização ──
-function init() {
+// ── INICIALIZAÇÃO ──
+async function init() {
   const params = new URLSearchParams(window.location.search);
-  const confId = params.get('conf');
-
-  if (confId) {
-    const dados = carregar(confId);
-    if (dados) {
-      conferencia = dados;
-      if (dados.encerrada) {
-        mostrarRelatorio();
-      } else {
-        mostrarTela('tela-abast');
-        filtroAtivo = 'todos';
-        renderAbast();
-      }
-    } else {
-      alert('Conferência não encontrada ou expirada.');
-      mostrarTela('tela-gestor');
-    }
-  } else {
-    mostrarTela('tela-gestor');
-  }
+  confId = params.get('conf');
 
   // Data padrão: amanhã
   const amanha = new Date();
   amanha.setDate(amanha.getDate() + 1);
   document.getElementById('inp-data').value = amanha.toISOString().split('T')[0];
+
+  if (confId) {
+    loading(true, 'Carregando conferência...');
+    try {
+      const snap = await getDoc(doc(db, 'conferencias', confId));
+      if (snap.exists()) {
+        conferencia = snap.data();
+        loading(false);
+        if (conferencia.encerrada) {
+          mostrarRelatorio();
+        } else {
+          mostrarTela('tela-abast');
+          filtroAtivo = 'todos';
+          renderAbast();
+        }
+      } else {
+        loading(false);
+        document.body.innerHTML = '<div class="erro-box" style="margin:32px auto;max-width:400px">Conferência não encontrada ou expirada.</div>';
+      }
+    } catch(e) {
+      loading(false);
+      console.error(e);
+      document.body.innerHTML = '<div class="erro-box" style="margin:32px auto;max-width:400px">Erro ao carregar. Verifique sua conexão e tente novamente.</div>';
+    }
+  } else {
+    loading(false);
+    mostrarTela('tela-gestor');
+  }
 }
 
 init();
