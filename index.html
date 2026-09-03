@@ -6,31 +6,19 @@
 <title>Controle de Validade</title>
 <style>
   :root {
-    --verde: #1D9E75;
-    --verde-claro: #E1F5EE;
-    --verde-borda: #9FE1CB;
-    --ambar: #EF9F27;
-    --ambar-claro: #FAEEDA;
-    --ambar-borda: #FAC775;
-    --vermelho: #E24B4A;
-    --vermelho-claro: #FCEBEB;
-    --cinza-bg: #F5F5F3;
-    --cinza-card: #FFFFFF;
-    --cinza-borda: #E2E2DC;
-    --cinza-borda-forte: #C8C8C0;
-    --txt-pri: #1A1A18;
-    --txt-sec: #6B6B65;
-    --txt-muted: #9A9A94;
-    --radius: 10px;
-    --radius-lg: 14px;
+    --verde: #1D9E75; --verde-claro: #E1F5EE; --verde-borda: #9FE1CB;
+    --ambar: #EF9F27; --ambar-claro: #FAEEDA; --ambar-borda: #FAC775;
+    --vermelho: #E24B4A; --vermelho-claro: #FCEBEB;
+    --cinza-bg: #F5F5F3; --cinza-card: #FFFFFF;
+    --cinza-borda: #E2E2DC; --cinza-borda-forte: #C8C8C0;
+    --txt-pri: #1A1A18; --txt-sec: #6B6B65; --txt-muted: #9A9A94;
+    --radius: 10px; --radius-lg: 14px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--cinza-bg); color: var(--txt-pri); min-height: 100vh; }
-  .tela { display: none; }
-  .tela.ativa { display: block; }
+  .tela { display: none; } .tela.ativa { display: block; }
 
-  /* LOADING */
-  .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; gap: 12px; }
+  .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; gap: 12px; }
   .loading-overlay.hidden { display: none; }
   .spinner { width: 36px; height: 36px; border: 3px solid var(--cinza-borda); border-top-color: var(--verde); border-radius: 50%; animation: spin .7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -40,19 +28,33 @@
   .gestor-wrap { max-width: 480px; margin: 0 auto; padding: 24px 16px 40px; }
   .logo { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--verde); margin-bottom: 24px; }
   h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
-  .sub { font-size: 14px; color: var(--txt-sec); margin-bottom: 28px; line-height: 1.5; }
-  .campo { margin-bottom: 16px; }
+  .sub { font-size: 14px; color: var(--txt-sec); margin-bottom: 24px; line-height: 1.5; }
+  .campo { margin-bottom: 14px; }
   .campo label { display: block; font-size: 12px; font-weight: 600; color: var(--txt-sec); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
-  .campo input, .campo textarea { width: 100%; padding: 11px 13px; border: 1px solid var(--cinza-borda); border-radius: var(--radius); font-size: 15px; color: var(--txt-pri); background: var(--cinza-card); outline: none; font-family: inherit; transition: border-color .15s; }
-  .campo input:focus, .campo textarea:focus { border-color: var(--verde); }
-  .campo textarea { resize: vertical; min-height: 180px; font-size: 13px; line-height: 1.6; }
+  .campo input, .campo select { width: 100%; padding: 11px 13px; border: 1px solid var(--cinza-borda); border-radius: var(--radius); font-size: 15px; color: var(--txt-pri); background: var(--cinza-card); outline: none; font-family: inherit; transition: border-color .15s; }
+  .campo input:focus, .campo select:focus { border-color: var(--verde); }
   .hint { font-size: 12px; color: var(--txt-muted); margin-top: 5px; }
+  .campo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .sheet-status { font-size: 12px; padding: 8px 12px; border-radius: 8px; margin-top: 6px; display: none; }
+  .sheet-status.ok { background: var(--verde-claro); color: #085041; display: block; }
+  .sheet-status.erro { background: var(--vermelho-claro); color: #a32d2d; display: block; }
+  .sheet-status.carregando { background: var(--ambar-claro); color: #854F0B; display: block; }
+
+  .produtos-preview { background: var(--cinza-card); border: 1px solid var(--cinza-borda); border-radius: var(--radius); padding: 12px; margin-top: 8px; max-height: 180px; overflow-y: auto; display: none; }
+  .produtos-preview.visivel { display: block; }
+  .preview-item { font-size: 12px; color: var(--txt-sec); padding: 3px 0; border-bottom: 1px solid var(--cinza-bg); display: flex; justify-content: space-between; }
+  .preview-item:last-child { border-bottom: none; }
+  .preview-count { font-size: 12px; font-weight: 600; color: var(--verde); margin-bottom: 6px; }
+
   .btn-gerar { width: 100%; padding: 14px; background: var(--verde); color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
   .btn-gerar:disabled { opacity: .4; cursor: default; }
+  .btn-carregar { width: 100%; padding: 11px; background: #fff; color: var(--txt-pri); border: 1px solid var(--cinza-borda-forte); border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 4px; }
+
   .link-box { display: none; background: var(--verde-claro); border: 1px solid var(--verde-borda); border-radius: var(--radius-lg); padding: 16px; margin-top: 20px; }
   .link-box.visivel { display: block; }
   .link-box .label { font-size: 12px; font-weight: 600; color: #0F6E56; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
-  .link-url { font-size: 13px; color: #085041; word-break: break-all; background: #fff; border-radius: 7px; padding: 10px 12px; border: 1px solid var(--verde-borda); margin-bottom: 10px; font-family: monospace; }
+  .link-url { font-size: 12px; color: #085041; word-break: break-all; background: #fff; border-radius: 7px; padding: 10px 12px; border: 1px solid var(--verde-borda); margin-bottom: 10px; font-family: monospace; }
   .btn-row { display: flex; gap: 8px; }
   .btn-sec { flex: 1; padding: 10px; border-radius: var(--radius); border: 1px solid var(--cinza-borda-forte); background: #fff; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--txt-pri); }
   .btn-sec.verde { background: var(--verde); color: #fff; border-color: var(--verde); }
@@ -73,19 +75,20 @@
   .badge-urg { font-size: 10px; background: var(--vermelho-claro); color: var(--vermelho); padding: 2px 7px; border-radius: 8px; text-transform: none; font-weight: 600; letter-spacing: 0; }
   .item-card { background: var(--cinza-card); border: 1px solid var(--cinza-borda); border-radius: var(--radius-lg); padding: 12px 13px; margin-bottom: 6px; transition: border-color .2s; }
   .item-card.s-retirado { border-color: var(--verde); }
-  .item-card.s-nao-retirou { border-color: var(--ambar); }
+  .item-card.s-validade-ok { border-color: var(--ambar); }
   .item-card.s-nao-tinha { opacity: .5; }
   .item-topo { display: flex; align-items: flex-start; gap: 8px; }
-  .item-nome { font-size: 14px; line-height: 1.35; flex: 1; }
-  .item-nome.riscado { text-decoration: line-through; color: var(--txt-muted); }
-  .vence-chip { font-size: 10px; padding: 3px 8px; border-radius: 7px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+  .item-nome { font-size: 14px; line-height: 1.35; flex: 1; font-weight: 500; }
+  .item-nome.riscado { text-decoration: line-through; color: var(--txt-muted); font-weight: 400; }
+  .datas-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .vence-chip { font-size: 10px; padding: 3px 8px; border-radius: 7px; font-weight: 600; white-space: nowrap; }
   .vc-venc { background: var(--vermelho-claro); color: var(--vermelho); }
   .vc-hoje { background: var(--ambar-claro); color: #854F0B; }
   .vc-ok { background: var(--verde-claro); color: #085041; }
   .item-acoes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px; }
   .acao-btn { padding: 8px 4px; border-radius: 8px; border: 1px solid var(--cinza-borda); background: var(--cinza-bg); color: var(--txt-sec); font-size: 11px; font-weight: 500; cursor: pointer; text-align: center; line-height: 1.3; }
   .acao-btn.a-retirado { background: var(--verde-claro); border-color: var(--verde-borda); color: #085041; }
-  .acao-btn.a-nao-retirou { background: var(--ambar-claro); border-color: var(--ambar-borda); color: #854F0B; }
+  .acao-btn.a-validade-ok { background: var(--ambar-claro); border-color: var(--ambar-borda); color: #854F0B; }
   .acao-btn.a-nao-tinha { background: #F1EFE8; border-color: var(--cinza-borda-forte); color: var(--txt-sec); }
   .qtd-row { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--cinza-borda); }
   .qtd-label { font-size: 12px; color: var(--txt-sec); }
@@ -113,7 +116,9 @@
   .stat-label { font-size: 11px; color: var(--txt-sec); margin-top: 2px; }
   .rel-secao { margin-bottom: 16px; }
   .rel-secao-titulo { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--txt-sec); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--cinza-borda); }
-  .rel-item { font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--cinza-bg); display: flex; justify-content: space-between; align-items: center; }
+  .rel-item { font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--cinza-bg); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .rel-item-nome { flex: 1; }
+  .rel-item-det { font-size: 11px; color: var(--txt-sec); white-space: nowrap; }
   .btn-wpp { width: 100%; padding: 14px; background: #25D366; color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
   .btn-nova { width: 100%; padding: 12px; background: #fff; color: var(--txt-pri); border: 1px solid var(--cinza-borda-forte); border-radius: var(--radius); font-size: 15px; font-weight: 500; cursor: pointer; }
   .vazio { text-align: center; padding: 32px 16px; color: var(--txt-muted); font-size: 14px; }
@@ -124,7 +129,7 @@
 
 <div class="loading-overlay" id="loading">
   <div class="spinner"></div>
-  <div class="loading-txt">Carregando...</div>
+  <div class="loading-txt" id="loading-txt">Carregando...</div>
 </div>
 
 <!-- GESTOR -->
@@ -132,27 +137,32 @@
 <div class="gestor-wrap">
   <div class="logo">Controle de Validade</div>
   <h1>Nova conferência</h1>
-  <p class="sub">Preencha os dados e gere o link para o abastecedor conferir na loja.</p>
+  <p class="sub">Selecione a loja e o período para gerar a lista automaticamente da planilha.</p>
+
   <div class="campo">
     <label>Loja</label>
     <input type="text" id="inp-loja" placeholder="Ex: Costa Mare" />
   </div>
-  <div class="campo">
-    <label>Retirar vencidos até</label>
-    <input type="date" id="inp-data" />
-    <p class="hint">Data imediatamente anterior à próxima visita</p>
-  </div>
-  <div class="campo">
-    <label>Lista de produtos</label>
-    <textarea id="inp-lista" placeholder="Cole a lista do WhatsApp ou digite um produto por linha.
 
-Exemplo:
-Cup Noodles carne defumada (vence dia 21/08)
-Miojo Nissin carne (vence dia 21/08)
-Hot Pocket picanha (vence dia 22/08)"></textarea>
-    <p class="hint">Aceita o formato atual com os parênteses de data.</p>
+  <div class="campo-row">
+    <div class="campo">
+      <label>Data inicial</label>
+      <input type="date" id="inp-data-ini" />
+      <p class="hint">Padrão: ontem</p>
+    </div>
+    <div class="campo">
+      <label>Retirar até</label>
+      <input type="date" id="inp-data-fim" />
+      <p class="hint">Próxima visita</p>
+    </div>
   </div>
-  <button class="btn-gerar" onclick="gerarLink()">Gerar link de conferência</button>
+
+  <button class="btn-carregar" onclick="carregarPlanilha()">🔄 Carregar produtos da planilha</button>
+  <div class="sheet-status" id="sheet-status"></div>
+  <div class="produtos-preview" id="preview"></div>
+
+  <button class="btn-gerar" id="btn-gerar" onclick="gerarLink()" disabled>Gerar link de conferência</button>
+
   <div class="link-box" id="link-box">
     <div class="label">Link gerado — envie pelo WhatsApp</div>
     <div class="link-url" id="link-url"></div>
@@ -178,14 +188,14 @@ Hot Pocket picanha (vence dia 22/08)"></textarea>
     <button class="filtro-btn ativo" onclick="filtrar('todos',this)">Todos</button>
     <button class="filtro-btn" onclick="filtrar('pendente',this)">Pendentes</button>
     <button class="filtro-btn" onclick="filtrar('retirado',this)">Retirados</button>
-    <button class="filtro-btn" onclick="filtrar('nao-retirou',this)">Não retirou</button>
+    <button class="filtro-btn" onclick="filtrar('validade-ok',this)">Validade ok</button>
     <button class="filtro-btn" onclick="filtrar('nao-tinha',this)">Sem estoque</button>
   </div>
   <div class="lista-wrap" id="ab-lista"></div>
   <div class="rodape-conf">
     <div class="resumo-grid">
       <div class="resumo-item"><span>Retirados</span><span id="r-ret" class="r-verde">0</span></div>
-      <div class="resumo-item"><span>Não retirou</span><span id="r-nret" class="r-ambar">0</span></div>
+      <div class="resumo-item"><span>Validade ok</span><span id="r-nret" class="r-ambar">0</span></div>
       <div class="resumo-item"><span>Sem estoque</span><span id="r-sem">0</span></div>
       <div class="resumo-item"><span>Pendentes</span><span id="r-pend">0</span></div>
     </div>
@@ -203,7 +213,7 @@ Hot Pocket picanha (vence dia 22/08)"></textarea>
   </div>
   <div class="rel-stats">
     <div class="stat-card"><div class="stat-num r-verde" id="rs-ret">0</div><div class="stat-label">Retirados</div></div>
-    <div class="stat-card"><div class="stat-num r-ambar" id="rs-nret">0</div><div class="stat-label">Não retirou</div></div>
+    <div class="stat-card"><div class="stat-num r-ambar" id="rs-nret">0</div><div class="stat-label">Validade ok</div></div>
     <div class="stat-card"><div class="stat-num" id="rs-sem">0</div><div class="stat-label">Sem estoque</div></div>
     <div class="stat-card"><div class="stat-num" style="color:var(--vermelho)" id="rs-pend">0</div><div class="stat-label">Não conferidos</div></div>
   </div>
@@ -213,7 +223,6 @@ Hot Pocket picanha (vence dia 22/08)"></textarea>
 </div>
 </div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -230,28 +239,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ── Estado global ──
+// Config planilha
+const SHEET_ID = '1s5cnwzbj0pHJibKJIfX-adqMHw0AQFh3';
+const SHEET_NAME = 'Controle de Validades';
+
 let conferencia = null;
 let filtroAtivo = 'todos';
 let confId = null;
+let produtosCarregados = [];
 
-// ── Utilitários ──
-function parseData(str) {
-  const m = str.match(/(\d{1,2})\/(\d{2})(?:\/(\d{4}))?/);
-  if (!m) return null;
-  return { dia: parseInt(m[1]), mes: parseInt(m[2]), ano: m[3] ? parseInt(m[3]) : 2026 };
+// ── Utilitários de data ──
+function parseDataSheet(str) {
+  if (!str || str.trim() === '') return null;
+  // Formato DD/MM/YYYY
+  const m = str.trim().match(/^(\d{1,2})\/(\d{2})\/(\d{4})$/);
+  if (m) return { dia: parseInt(m[1]), mes: parseInt(m[2]), ano: parseInt(m[3]) };
+  // Formato DD/MM/YY
+  const m2 = str.trim().match(/^(\d{1,2})\/(\d{2})\/(\d{2})$/);
+  if (m2) return { dia: parseInt(m2[1]), mes: parseInt(m2[2]), ano: 2000 + parseInt(m2[3]) };
+  return null;
 }
 
-function parseLista(texto) {
-  return texto.split('\n')
-    .map(l => l.replace(/^[\*\-\•\d+\.]\s*/, '').trim())
-    .filter(Boolean)
-    .map(l => {
-      const mData = l.match(/\((?:vence(?:\s+dia)?\s*)?(\d{1,2}\/\d{2}(?:\/\d{4})?)\)/i);
-      const data = mData ? parseData(mData[1]) : null;
-      const nome = l.replace(/\(.*?\)/g, '').trim();
-      return nome ? { nome, data } : null;
-    }).filter(Boolean);
+function dataParaTimestamp(d) {
+  if (!d) return null;
+  return new Date(d.ano, d.mes - 1, d.dia).getTime();
 }
 
 function hoje() {
@@ -272,18 +283,27 @@ function fmtData(data) {
   return String(data.dia).padStart(2,'0') + '/' + String(data.mes).padStart(2,'0');
 }
 
+function fmtDataCompleta(data) {
+  if (!data) return '—';
+  return String(data.dia).padStart(2,'0') + '/' + String(data.mes).padStart(2,'0') + '/' + data.ano;
+}
+
+function inputParaData(val) {
+  if (!val) return null;
+  const [a, m, d] = val.split('-');
+  return { dia: parseInt(d), mes: parseInt(m), ano: parseInt(a) };
+}
+
 function chipVence(data) {
   const d = diasDiff(data);
-  if (d < 0) return `<span class="vence-chip vc-venc">Vencido ${fmtData(data)}</span>`;
-  if (d === 0) return `<span class="vence-chip vc-hoje">Vence hoje</span>`;
-  if (d === 1) return `<span class="vence-chip vc-hoje">Amanhã</span>`;
-  return `<span class="vence-chip vc-ok">${fmtData(data)}</span>`;
+  const cls = d < 0 ? 'vc-venc' : d <= 1 ? 'vc-hoje' : 'vc-ok';
+  const label = d < 0 ? `Vencido ${fmtData(data)}` : d === 0 ? 'Hoje' : d === 1 ? `Amanhã ${fmtData(data)}` : fmtData(data);
+  return `<span class="vence-chip ${cls}">${label}</span>`;
 }
 
 function loading(show, txt) {
-  const el = document.getElementById('loading');
-  el.classList.toggle('hidden', !show);
-  if (txt) el.querySelector('.loading-txt').textContent = txt;
+  document.getElementById('loading').classList.toggle('hidden', !show);
+  if (txt) document.getElementById('loading-txt').textContent = txt;
 }
 
 function mostrarTela(id) {
@@ -292,25 +312,146 @@ function mostrarTela(id) {
   window.scrollTo(0, 0);
 }
 
-// ── GESTOR ──
+// ── CARREGAR PLANILHA ──
+window.carregarPlanilha = async function() {
+  const ini = document.getElementById('inp-data-ini').value;
+  const fim = document.getElementById('inp-data-fim').value;
+  const statusEl = document.getElementById('sheet-status');
+  const previewEl = document.getElementById('preview');
+
+  if (!ini || !fim) {
+    statusEl.className = 'sheet-status erro';
+    statusEl.textContent = 'Preencha as datas inicial e final antes de carregar.';
+    return;
+  }
+
+  const dataIni = inputParaData(ini);
+  const dataFim = inputParaData(fim);
+  const tsIni = dataParaTimestamp(dataIni);
+  const tsFim = dataParaTimestamp(dataFim);
+
+  statusEl.className = 'sheet-status carregando';
+  statusEl.textContent = '⏳ Carregando planilha...';
+  previewEl.classList.remove('visivel');
+  previewEl.innerHTML = '';
+
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('Erro HTTP ' + resp.status);
+    const csv = await resp.text();
+
+    const linhas = parseCSV(csv);
+    if (linhas.length < 2) throw new Error('Planilha vazia ou formato inesperado.');
+
+    // Encontra o cabeçalho — procura a linha com "Código Prod" ou similar
+    let headerIdx = 0;
+    for (let i = 0; i < Math.min(5, linhas.length); i++) {
+      const row = linhas[i].map(c => c.toLowerCase());
+      if (row.some(c => c.includes('código') || c.includes('codigo') || c.includes('validade'))) {
+        headerIdx = i; break;
+      }
+    }
+
+    // Colunas: A=0 Código, B=1 Nome, E=4 Validade, F=5 Data02, G=6 Data03, H=7 Data04, I=8 Data05
+    const mapa = {};
+
+    for (let i = headerIdx + 1; i < linhas.length; i++) {
+      const row = linhas[i];
+      const nome = (row[1] || '').trim();
+      if (!nome) continue;
+
+      // Coleta todas as datas da linha (colunas E a I = índices 4 a 8)
+      const datas = [];
+      for (let c = 4; c <= 8; c++) {
+        const d = parseDataSheet(row[c] || '');
+        if (d) {
+          const ts = dataParaTimestamp(d);
+          if (ts >= tsIni && ts <= tsFim) datas.push(d);
+        }
+      }
+
+      if (!datas.length) continue;
+
+      // Agrupa por nome (normalizado)
+      const key = nome.toLowerCase().trim();
+      if (!mapa[key]) {
+        mapa[key] = { nome, datas: [] };
+      }
+      // Adiciona datas não duplicadas
+      datas.forEach(d => {
+        const ts = dataParaTimestamp(d);
+        if (!mapa[key].datas.find(x => dataParaTimestamp(x) === ts)) {
+          mapa[key].datas.push(d);
+        }
+      });
+    }
+
+    produtosCarregados = Object.values(mapa).map(p => ({
+      nome: p.nome,
+      datas: p.datas.sort((a, b) => dataParaTimestamp(a) - dataParaTimestamp(b))
+    }));
+
+    if (!produtosCarregados.length) {
+      statusEl.className = 'sheet-status erro';
+      statusEl.textContent = `Nenhum produto com validade entre ${fmtDataCompleta(dataIni)} e ${fmtDataCompleta(dataFim)}.`;
+      document.getElementById('btn-gerar').disabled = true;
+      return;
+    }
+
+    statusEl.className = 'sheet-status ok';
+    statusEl.textContent = `✓ ${produtosCarregados.length} produto(s) encontrados no período.`;
+
+    // Preview
+    previewEl.innerHTML = `<div class="preview-count">${produtosCarregados.length} produtos para conferir</div>` +
+      produtosCarregados.slice(0, 20).map(p =>
+        `<div class="preview-item"><span>${p.nome}</span><span>${p.datas.map(fmtData).join(' · ')}</span></div>`
+      ).join('') +
+      (produtosCarregados.length > 20 ? `<div class="preview-item" style="color:var(--txt-muted)">... e mais ${produtosCarregados.length - 20}</div>` : '');
+    previewEl.classList.add('visivel');
+    document.getElementById('btn-gerar').disabled = false;
+
+  } catch(e) {
+    console.error(e);
+    statusEl.className = 'sheet-status erro';
+    statusEl.textContent = 'Erro ao carregar planilha: ' + e.message;
+    document.getElementById('btn-gerar').disabled = true;
+  }
+};
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [], cell = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"') { inQ = !inQ; continue; }
+    if (c === ',' && !inQ) { row.push(cell); cell = ''; continue; }
+    if ((c === '\n' || c === '\r') && !inQ) {
+      row.push(cell); rows.push(row); row = []; cell = '';
+      if (c === '\r' && text[i+1] === '\n') i++;
+      continue;
+    }
+    cell += c;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+
+// ── GESTOR: gerar link ──
 window.gerarLink = async function() {
   const loja = document.getElementById('inp-loja').value.trim();
-  const dataLimite = document.getElementById('inp-data').value;
-  const listaTexto = document.getElementById('inp-lista').value.trim();
-  if (!loja || !dataLimite || !listaTexto) { alert('Preencha todos os campos.'); return; }
-  const produtos = parseLista(listaTexto);
-  if (!produtos.length) { alert('Nenhum produto identificado. Verifique o formato.'); return; }
+  const fim = document.getElementById('inp-data-fim').value;
+  if (!loja) { alert('Informe o nome da loja.'); return; }
+  if (!produtosCarregados.length) { alert('Carregue os produtos da planilha primeiro.'); return; }
 
-  loading(true, 'Salvando no servidor...');
+  loading(true, 'Salvando conferência...');
   const id = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
-  const [ano, mes, dia] = dataLimite.split('-');
+  const dataFim = inputParaData(fim);
   const dados = {
-    id, loja,
-    dataLimite: { dia: parseInt(dia), mes: parseInt(mes), ano: parseInt(ano) },
-    produtos,
-    estado: produtos.map(() => ({ status: 'pendente', qtd: 1 })),
-    encerrada: false,
-    criadaEm: Date.now()
+    id, loja, dataLimite: dataFim,
+    produtos: produtosCarregados,
+    estado: produtosCarregados.map(() => ({ status: 'pendente', qtd: 1 })),
+    encerrada: false, criadaEm: Date.now()
   };
   try {
     await setDoc(doc(db, 'conferencias', id), dados);
@@ -319,19 +460,13 @@ window.gerarLink = async function() {
     document.getElementById('link-box').classList.add('visivel');
     window._linkAtual = url;
     window._lojaAtual = loja;
-  } catch(e) {
-    alert('Erro ao salvar. Verifique sua conexão.');
-    console.error(e);
-  }
+  } catch(e) { alert('Erro ao salvar: ' + e.message); }
   loading(false);
 };
 
-window.copiarLink = function() {
-  navigator.clipboard.writeText(window._linkAtual || '').then(() => alert('Link copiado!'));
-};
-
-window.abrirWpp = function() {
-  const msg = encodeURIComponent('📋 *Conferência de validade — ' + (window._lojaAtual||'') + '*\n\nAcesse o link para conferir os produtos:\n' + (window._linkAtual||''));
+window.copiarLink = () => navigator.clipboard.writeText(window._linkAtual||'').then(() => alert('Link copiado!'));
+window.abrirWpp = () => {
+  const msg = encodeURIComponent('📋 *Conferência de validade — ' + (window._lojaAtual||'') + '*\n\nAcesse o link para conferir:\n' + (window._linkAtual||''));
   window.open('https://wa.me/?text=' + msg, '_blank');
 };
 
@@ -341,20 +476,16 @@ window.setStatus = async function(i, s) {
   renderAbast();
   await salvarEstado();
 };
-
 window.setQtd = async function(i, delta) {
-  conferencia.estado[i].qtd = Math.max(1, (conferencia.estado[i].qtd || 1) + delta);
+  conferencia.estado[i].qtd = Math.max(1, (conferencia.estado[i].qtd||1) + delta);
   renderAbast();
   await salvarEstado();
 };
-
 async function salvarEstado() {
   if (!confId) return;
-  try {
-    await updateDoc(doc(db, 'conferencias', confId), { estado: conferencia.estado });
-  } catch(e) { console.error('Erro ao salvar:', e); }
+  try { await updateDoc(doc(db, 'conferencias', confId), { estado: conferencia.estado }); }
+  catch(e) { console.error(e); }
 }
-
 window.filtrar = function(tipo, el) {
   filtroAtivo = tipo;
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
@@ -363,19 +494,17 @@ window.filtrar = function(tipo, el) {
 };
 
 function renderAbast() {
-  const c = conferencia;
-  const est = c.estado;
-  const total = c.produtos.length;
+  const c = conferencia, est = c.estado, total = c.produtos.length;
   const conf  = est.filter(e => e.status !== 'pendente').length;
   const ret   = est.filter(e => e.status === 'retirado').length;
-  const nret  = est.filter(e => e.status === 'nao-retirou').length;
+  const nret  = est.filter(e => e.status === 'validade-ok').length;
   const sem   = est.filter(e => e.status === 'nao-tinha').length;
   const pend  = total - conf;
 
   document.getElementById('ab-loja').textContent = c.loja;
   document.getElementById('ab-meta').textContent = 'Retirar vencidos até ' + fmtData(c.dataLimite);
   document.getElementById('ab-cont').textContent = conf + ' / ' + total;
-  document.getElementById('ab-barra').style.width = Math.round(conf / total * 100) + '%';
+  document.getElementById('ab-barra').style.width = Math.round(conf/total*100) + '%';
   document.getElementById('r-ret').textContent  = ret;
   document.getElementById('r-nret').textContent = nret;
   document.getElementById('r-sem').textContent  = sem;
@@ -385,21 +514,21 @@ function renderAbast() {
   btn.disabled = conf === 0;
   btn.textContent = pend > 0 ? `Encerrar (${pend} pendentes)` : 'Encerrar conferência';
 
+  // Agrupa por data mais próxima do produto
   const grupos = {};
   c.produtos.forEach((p, i) => {
     const s = est[i].status;
     if (filtroAtivo !== 'todos' && filtroAtivo !== s) return;
-    const k = p.data ? fmtData(p.data) : 'Sem data';
-    if (!grupos[k]) grupos[k] = { data: p.data, itens: [] };
-    grupos[k].itens.push({ ...p, i, s, qtd: est[i].qtd || 1 });
+    const dataPrincipal = p.datas && p.datas.length ? p.datas[0] : null;
+    const k = dataPrincipal ? fmtData(dataPrincipal) : 'Sem data';
+    if (!grupos[k]) grupos[k] = { data: dataPrincipal, itens: [] };
+    grupos[k].itens.push({ ...p, i, s, qtd: est[i].qtd||1 });
   });
 
-  const chaves = Object.keys(grupos).sort((a, b) => {
+  const chaves = Object.keys(grupos).sort((a,b) => {
     const da = grupos[a].data, db2 = grupos[b].data;
     if (!da) return 1; if (!db2) return -1;
-    if (da.ano !== db2.ano) return da.ano - db2.ano;
-    if (da.mes !== db2.mes) return da.mes - db2.mes;
-    return da.dia - db2.dia;
+    return dataParaTimestamp(da) - dataParaTimestamp(db2);
   });
 
   let html = '';
@@ -409,19 +538,22 @@ function renderAbast() {
     const urg = d < 0 ? '<span class="badge-urg">Vencido</span>' : d === 0 ? '<span class="badge-urg">Hoje</span>' : '';
     html += `<div class="grupo-titulo">${k}${urg}</div>`;
     g.itens.forEach(p => {
-      const cls = p.s === 'retirado' ? 's-retirado' : p.s === 'nao-retirou' ? 's-nao-retirou' : p.s === 'nao-tinha' ? 's-nao-tinha' : '';
-      const nomeCls = p.s === 'nao-tinha' ? 'riscado' : '';
+      const cls = p.s==='retirado' ? 's-retirado' : p.s==='validade-ok' ? 's-validade-ok' : p.s==='nao-tinha' ? 's-nao-tinha' : '';
+      const nomeCls = p.s==='nao-tinha' ? 'riscado' : '';
+      const datasHtml = (p.datas||[]).map(d => chipVence(d)).join('');
       html += `<div class="item-card ${cls}">
         <div class="item-topo">
-          <div class="item-nome ${nomeCls}">${p.nome}</div>
-          ${p.data ? chipVence(p.data) : ''}
+          <div style="flex:1">
+            <div class="item-nome ${nomeCls}">${p.nome}</div>
+            <div class="datas-chips">${datasHtml}</div>
+          </div>
         </div>
         <div class="item-acoes">
           <button class="acao-btn ${p.s==='retirado'?'a-retirado':''}" onclick="setStatus(${p.i},'retirado')">✓ Retirei</button>
-          <button class="acao-btn ${p.s==='nao-retirou'?'a-nao-retirou':''}" onclick="setStatus(${p.i},'nao-retirou')">— Não retirei</button>
+          <button class="acao-btn ${p.s==='validade-ok'?'a-validade-ok':''}" onclick="setStatus(${p.i},'validade-ok')">👍 Validade ok</button>
           <button class="acao-btn ${p.s==='nao-tinha'?'a-nao-tinha':''}" onclick="setStatus(${p.i},'nao-tinha')">✕ Sem estoque</button>
         </div>
-        ${p.s === 'retirado' ? `<div class="qtd-row">
+        ${p.s==='retirado' ? `<div class="qtd-row">
           <span class="qtd-label">Quantidade retirada</span>
           <div class="qtd-ctrl">
             <button class="qtd-btn" onclick="setQtd(${p.i},-1)">−</button>
@@ -443,74 +575,62 @@ window.encerrar = async function() {
   loading(true, 'Salvando relatório...');
   conferencia.encerrada = true;
   conferencia.encerradaEm = Date.now();
-  try {
-    await updateDoc(doc(db, 'conferencias', confId), { encerrada: true, encerradaEm: conferencia.encerradaEm, estado: conferencia.estado });
-  } catch(e) { console.error(e); }
+  try { await updateDoc(doc(db, 'conferencias', confId), { encerrada: true, encerradaEm: conferencia.encerradaEm, estado: conferencia.estado }); }
+  catch(e) { console.error(e); }
   loading(false);
   mostrarRelatorio();
 };
 
-// ── RELATÓRIO ──
 function mostrarRelatorio() {
-  const c = conferencia;
-  const est = c.estado;
-  const ret  = c.produtos.filter((_, i) => est[i].status === 'retirado');
-  const nret = c.produtos.filter((_, i) => est[i].status === 'nao-retirou');
-  const sem  = c.produtos.filter((_, i) => est[i].status === 'nao-tinha');
-  const pend = c.produtos.filter((_, i) => est[i].status === 'pendente');
+  const c = conferencia, est = c.estado;
+  const ret  = c.produtos.filter((_,i) => est[i].status==='retirado');
+  const nret = c.produtos.filter((_,i) => est[i].status==='validade-ok');
+  const sem  = c.produtos.filter((_,i) => est[i].status==='nao-tinha');
+  const pend = c.produtos.filter((_,i) => est[i].status==='pendente');
 
   document.getElementById('rel-titulo').textContent = c.loja + ' — conferência encerrada';
-  document.getElementById('rel-sub').textContent = 'Retirar vencidos até ' + fmtData(c.dataLimite);
+  document.getElementById('rel-sub').textContent = 'Vencidos até ' + fmtData(c.dataLimite);
   document.getElementById('rs-ret').textContent  = ret.length;
   document.getElementById('rs-nret').textContent = nret.length;
   document.getElementById('rs-sem').textContent  = sem.length;
   document.getElementById('rs-pend').textContent = pend.length;
 
   let html = '';
-  if (ret.length) {
-    html += `<div class="rel-secao"><div class="rel-secao-titulo" style="color:var(--verde)">✓ Retirados (${ret.length})</div>`;
-    ret.forEach(p => { const i = c.produtos.indexOf(p); html += `<div class="rel-item"><span>${p.nome}</span><span style="color:var(--txt-sec)">${est[i].qtd||1} un.</span></div>`; });
-    html += '</div>';
-  }
-  if (nret.length) {
-    html += `<div class="rel-secao"><div class="rel-secao-titulo" style="color:#854F0B">— Não retirou (${nret.length})</div>`;
-    nret.forEach(p => { html += `<div class="rel-item"><span>${p.nome}</span><span style="color:var(--txt-sec)">${fmtData(p.data)}</span></div>`; });
-    html += '</div>';
-  }
-  if (sem.length) {
-    html += `<div class="rel-secao"><div class="rel-secao-titulo">✕ Sem estoque (${sem.length})</div>`;
-    sem.forEach(p => { html += `<div class="rel-item"><span>${p.nome}</span><span style="color:var(--txt-sec)">${fmtData(p.data)}</span></div>`; });
-    html += '</div>';
-  }
-  if (pend.length) {
-    html += `<div class="rel-secao"><div class="rel-secao-titulo" style="color:var(--vermelho)">⚠ Não conferidos (${pend.length})</div>`;
-    pend.forEach(p => { html += `<div class="rel-item"><span>${p.nome}</span><span style="color:var(--txt-sec)">${fmtData(p.data)}</span></div>`; });
-    html += '</div>';
-  }
+  const secao = (cor, titulo, lista, detalhe) => {
+    if (!lista.length) return '';
+    return `<div class="rel-secao"><div class="rel-secao-titulo" style="color:${cor}">${titulo} (${lista.length})</div>` +
+      lista.map(p => { const i=c.produtos.indexOf(p); return `<div class="rel-item"><span class="rel-item-nome">${p.nome}</span><span class="rel-item-det">${detalhe(p,i)}</span></div>`; }).join('') +
+      '</div>';
+  };
+  html += secao('var(--verde)', '✓ Retirados', ret, (p,i) => (est[i].qtd||1)+' un.');
+  html += secao('#854F0B', '👍 Validade ok', nret, p => (p.datas||[]).map(fmtData).join(' · '));
+  html += secao('var(--txt-sec)', '✕ Sem estoque', sem, p => (p.datas||[]).map(fmtData).join(' · '));
+  html += secao('var(--vermelho)', '⚠ Não conferidos', pend, p => (p.datas||[]).map(fmtData).join(' · '));
   document.getElementById('rel-corpo').innerHTML = html;
   mostrarTela('tela-relatorio');
 }
 
 window.enviarWpp = function() {
-  const c = conferencia; const est = c.estado;
-  const ret  = c.produtos.filter((_, i) => est[i].status === 'retirado');
-  const nret = c.produtos.filter((_, i) => est[i].status === 'nao-retirou');
-  const sem  = c.produtos.filter((_, i) => est[i].status === 'nao-tinha');
-  const pend = c.produtos.filter((_, i) => est[i].status === 'pendente');
+  const c = conferencia, est = c.estado;
+  const ret  = c.produtos.filter((_,i) => est[i].status==='retirado');
+  const nret = c.produtos.filter((_,i) => est[i].status==='validade-ok');
+  const sem  = c.produtos.filter((_,i) => est[i].status==='nao-tinha');
+  const pend = c.produtos.filter((_,i) => est[i].status==='pendente');
   let msg = `🏪 *${c.loja}* — Conferência de validade\n📅 Vencidos até ${fmtData(c.dataLimite)}\n\n`;
-  if (ret.length)  { msg += `✅ *Retirados (${ret.length}):*\n`;  ret.forEach(p  => { const i=c.produtos.indexOf(p); msg+=`• ${p.nome} — ${est[i].qtd||1} un.\n`; }); msg+='\n'; }
-  if (nret.length) { msg += `⚠️ *Não retirou (${nret.length}):*\n`; nret.forEach(p => msg+=`• ${p.nome}\n`); msg+='\n'; }
-  if (sem.length)  { msg += `📭 *Sem estoque (${sem.length}):*\n`; sem.forEach(p  => msg+=`• ${p.nome}\n`); msg+='\n'; }
-  if (pend.length) { msg += `❌ *Não conferidos (${pend.length}):*\n`; pend.forEach(p => msg+=`• ${p.nome}\n`); }
-  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+  if (ret.length)  { msg+=`✅ *Retirados (${ret.length}):*\n`;  ret.forEach(p=>{const i=c.produtos.indexOf(p);msg+=`• ${p.nome} — ${est[i].qtd||1} un.\n`;}); msg+='\n'; }
+  if (nret.length) { msg+=`👍 *Validade ok (${nret.length}):*\n`; nret.forEach(p=>msg+=`• ${p.nome}\n`); msg+='\n'; }
+  if (sem.length)  { msg+=`📭 *Sem estoque (${sem.length}):*\n`; sem.forEach(p=>msg+=`• ${p.nome}\n`); msg+='\n'; }
+  if (pend.length) { msg+=`❌ *Não conferidos (${pend.length}):*\n`; pend.forEach(p=>msg+=`• ${p.nome}\n`); }
+  window.open('https://wa.me/?text='+encodeURIComponent(msg), '_blank');
 };
 
 window.novaConferencia = function() {
-  conferencia = null; confId = null;
-  document.getElementById('inp-loja').value = '';
-  document.getElementById('inp-data').value = '';
-  document.getElementById('inp-lista').value = '';
+  conferencia=null; confId=null; produtosCarregados=[];
+  document.getElementById('inp-loja').value='';
+  document.getElementById('sheet-status').className='sheet-status';
+  document.getElementById('preview').classList.remove('visivel');
   document.getElementById('link-box').classList.remove('visivel');
+  document.getElementById('btn-gerar').disabled=true;
   mostrarTela('tela-gestor');
 };
 
@@ -519,10 +639,11 @@ async function init() {
   const params = new URLSearchParams(window.location.search);
   confId = params.get('conf');
 
-  // Data padrão: amanhã
-  const amanha = new Date();
-  amanha.setDate(amanha.getDate() + 1);
-  document.getElementById('inp-data').value = amanha.toISOString().split('T')[0];
+  // Datas padrão
+  const ontem = new Date(); ontem.setDate(ontem.getDate()-1);
+  const amanha = new Date(); amanha.setDate(amanha.getDate()+1);
+  document.getElementById('inp-data-ini').value = ontem.toISOString().split('T')[0];
+  document.getElementById('inp-data-fim').value = amanha.toISOString().split('T')[0];
 
   if (confId) {
     loading(true, 'Carregando conferência...');
@@ -531,21 +652,14 @@ async function init() {
       if (snap.exists()) {
         conferencia = snap.data();
         loading(false);
-        if (conferencia.encerrada) {
-          mostrarRelatorio();
-        } else {
-          mostrarTela('tela-abast');
-          filtroAtivo = 'todos';
-          renderAbast();
-        }
+        conferencia.encerrada ? mostrarRelatorio() : (mostrarTela('tela-abast'), renderAbast());
       } else {
         loading(false);
-        document.body.innerHTML = '<div class="erro-box" style="margin:32px auto;max-width:400px">Conferência não encontrada ou expirada.</div>';
+        document.body.innerHTML = '<div class="erro-box" style="margin:32px auto;max-width:400px">Conferência não encontrada.</div>';
       }
     } catch(e) {
       loading(false);
-      console.error(e);
-      document.body.innerHTML = '<div class="erro-box" style="margin:32px auto;max-width:400px">Erro ao carregar. Verifique sua conexão e tente novamente.</div>';
+      document.body.innerHTML = '<div class="erro-box" style="margin:32px auto;max-width:400px">Erro ao carregar. Verifique sua conexão.</div>';
     }
   } else {
     loading(false);
