@@ -523,6 +523,7 @@ function renderAbast() {
     const k = dataPrincipal ? fmtData(dataPrincipal) : 'Sem data';
     if (!grupos[k]) grupos[k] = { data: dataPrincipal, itens: [] };
     grupos[k].itens.push({ ...p, i, s, qtd: est[i].qtd||1 });
+    grupos[k].itens.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
   });
 
   const chaves = Object.keys(grupos).sort((a,b) => {
@@ -617,10 +618,10 @@ window.enviarWpp = function() {
   const sem  = c.produtos.filter((_,i) => est[i].status==='nao-tinha');
   const pend = c.produtos.filter((_,i) => est[i].status==='pendente');
   let msg = `🏪 *${c.loja}* — Conferência de validade\n📅 Vencidos até ${fmtData(c.dataLimite)}\n\n`;
-  if (ret.length)  { msg+=`✅ *Retirados (${ret.length}):*\n`;  ret.forEach(p=>{const i=c.produtos.indexOf(p);msg+=`• ${p.nome} — ${est[i].qtd||1} un.\n`;}); msg+='\n'; }
-  if (nret.length) { msg+=`👍 *Validade ok (${nret.length}):*\n`; nret.forEach(p=>msg+=`• ${p.nome}\n`); msg+='\n'; }
-  if (sem.length)  { msg+=`📭 *Sem estoque (${sem.length}):*\n`; sem.forEach(p=>msg+=`• ${p.nome}\n`); msg+='\n'; }
-  if (pend.length) { msg+=`❌ *Não conferidos (${pend.length}):*\n`; pend.forEach(p=>msg+=`• ${p.nome}\n`); }
+  if (ret.length)  { msg+=`✅ *Retirados (${ret.length}):*\n`;  ret.forEach(p=>{const i=c.produtos.indexOf(p);msg+=`- ${p.nome} — ${est[i].qtd||1} un.\n`;}); msg+='\n'; }
+  if (nret.length) { msg+=`👍 *Validade ok (${nret.length}):*\n`; nret.forEach(p=>msg+=`- ${p.nome}\n`); msg+='\n'; }
+  if (sem.length)  { msg+=`📭 *Sem estoque (${sem.length}):*\n`; sem.forEach(p=>msg+=`- ${p.nome}\n`); msg+='\n'; }
+  if (pend.length) { msg+=`❌ *Não conferidos (${pend.length}):*\n`; pend.forEach(p=>msg+=`- ${p.nome}\n`); }
   window.open('https://wa.me/?text='+encodeURIComponent(msg), '_blank');
 };
 
