@@ -2,230 +2,81 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Controle de Validade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conferência de Validades</title>
 <style>
-  :root {
-    --verde: #1D9E75; --verde-claro: #E1F5EE; --verde-borda: #9FE1CB;
-    --ambar: #EF9F27; --ambar-claro: #FAEEDA; --ambar-borda: #FAC775;
-    --vermelho: #E24B4A; --vermelho-claro: #FCEBEB;
-    --cinza-bg: #F5F5F3; --cinza-card: #FFFFFF;
-    --cinza-borda: #E2E2DC; --cinza-borda-forte: #C8C8C0;
-    --txt-pri: #1A1A18; --txt-sec: #6B6B65; --txt-muted: #9A9A94;
-    --radius: 10px; --radius-lg: 14px;
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--cinza-bg); color: var(--txt-pri); min-height: 100vh; }
-  .tela { display: none; } .tela.ativa { display: block; }
-
-  .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; gap: 12px; }
-  .loading-overlay.hidden { display: none; }
-  .spinner { width: 36px; height: 36px; border: 3px solid var(--cinza-borda); border-top-color: var(--verde); border-radius: 50%; animation: spin .7s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-txt { font-size: 14px; color: var(--txt-sec); }
-
-  /* GESTOR */
-  .gestor-wrap { max-width: 480px; margin: 0 auto; padding: 24px 16px 40px; }
-  .logo { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--verde); margin-bottom: 24px; }
-  h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
-  .sub { font-size: 14px; color: var(--txt-sec); margin-bottom: 24px; line-height: 1.5; }
-  .campo { margin-bottom: 14px; }
-  .campo label { display: block; font-size: 12px; font-weight: 600; color: var(--txt-sec); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
-  .campo input, .campo select { width: 100%; padding: 11px 13px; border: 1px solid var(--cinza-borda); border-radius: var(--radius); font-size: 15px; color: var(--txt-pri); background: var(--cinza-card); outline: none; font-family: inherit; transition: border-color .15s; }
-  .campo input:focus, .campo select:focus { border-color: var(--verde); }
-  .hint { font-size: 12px; color: var(--txt-muted); margin-top: 5px; }
-  .campo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  .sheet-status { font-size: 12px; padding: 8px 12px; border-radius: 8px; margin-top: 6px; display: none; }
-  .sheet-status.ok { background: var(--verde-claro); color: #085041; display: block; }
-  .sheet-status.erro { background: var(--vermelho-claro); color: #a32d2d; display: block; }
-  .sheet-status.carregando { background: var(--ambar-claro); color: #854F0B; display: block; }
-
-  .produtos-preview { background: var(--cinza-card); border: 1px solid var(--cinza-borda); border-radius: var(--radius); padding: 12px; margin-top: 8px; max-height: 180px; overflow-y: auto; display: none; }
-  .produtos-preview.visivel { display: block; }
-  .preview-item { font-size: 12px; color: var(--txt-sec); padding: 3px 0; border-bottom: 1px solid var(--cinza-bg); display: flex; justify-content: space-between; }
-  .preview-item:last-child { border-bottom: none; }
-  .preview-count { font-size: 12px; font-weight: 600; color: var(--verde); margin-bottom: 6px; }
-
-  .btn-gerar { width: 100%; padding: 14px; background: var(--verde); color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
-  .btn-gerar:disabled { opacity: .4; cursor: default; }
-  .btn-carregar { width: 100%; padding: 11px; background: #fff; color: var(--txt-pri); border: 1px solid var(--cinza-borda-forte); border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 4px; }
-
-  .link-box { display: none; background: var(--verde-claro); border: 1px solid var(--verde-borda); border-radius: var(--radius-lg); padding: 16px; margin-top: 20px; }
-  .link-box.visivel { display: block; }
-  .link-box .label { font-size: 12px; font-weight: 600; color: #0F6E56; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
-  .link-url { font-size: 12px; color: #085041; word-break: break-all; background: #fff; border-radius: 7px; padding: 10px 12px; border: 1px solid var(--verde-borda); margin-bottom: 10px; font-family: monospace; }
-  .btn-row { display: flex; gap: 8px; }
-  .btn-sec { flex: 1; padding: 10px; border-radius: var(--radius); border: 1px solid var(--cinza-borda-forte); background: #fff; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--txt-pri); }
-  .btn-sec.verde { background: var(--verde); color: #fff; border-color: var(--verde); }
-
-  /* ABASTECEDOR */
-  .header-conf { background: #fff; border-bottom: 1px solid var(--cinza-borda); padding: 14px 16px 12px; position: sticky; top: 0; z-index: 10; }
-  .loja-nome { font-size: 17px; font-weight: 600; }
-  .loja-meta { font-size: 12px; color: var(--txt-sec); margin-top: 2px; }
-  .prog-wrap { margin-top: 10px; }
-  .prog-nums { display: flex; justify-content: space-between; font-size: 12px; color: var(--txt-sec); margin-bottom: 4px; }
-  .prog-bar { height: 5px; background: var(--cinza-bg); border-radius: 3px; overflow: hidden; }
-  .prog-fill { height: 100%; background: var(--verde); border-radius: 3px; transition: width .3s; }
-  .filtros-wrap { background: #fff; border-bottom: 1px solid var(--cinza-borda); padding: 8px 12px; display: flex; gap: 6px; overflow-x: auto; }
-  .filtro-btn { font-size: 12px; padding: 5px 13px; border-radius: 20px; border: 1px solid var(--cinza-borda); background: #fff; color: var(--txt-sec); cursor: pointer; white-space: nowrap; flex-shrink: 0; }
-  .filtro-btn.ativo { background: var(--verde-claro); border-color: var(--verde-borda); color: #085041; font-weight: 500; }
-  .lista-wrap { padding: 10px 12px 140px; }
-  .grupo-titulo { font-size: 11px; font-weight: 600; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .06em; padding: 10px 2px 5px; display: flex; align-items: center; gap: 6px; }
-  .badge-urg { font-size: 10px; background: var(--vermelho-claro); color: var(--vermelho); padding: 2px 7px; border-radius: 8px; text-transform: none; font-weight: 600; letter-spacing: 0; }
-  .item-card { background: var(--cinza-card); border: 1px solid var(--cinza-borda); border-radius: var(--radius-lg); padding: 12px 13px; margin-bottom: 6px; transition: border-color .2s; }
-  .item-card.s-retirado { border-color: var(--verde); }
-  .item-card.s-validade-ok { border-color: var(--ambar); }
-  .item-card.s-nao-tinha { opacity: .5; }
-  .item-topo { display: flex; align-items: flex-start; gap: 8px; }
-  .item-nome { font-size: 14px; line-height: 1.35; flex: 1; font-weight: 500; }
-  .item-nome.riscado { text-decoration: line-through; color: var(--txt-muted); font-weight: 400; }
-  .datas-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-  .vence-chip { font-size: 10px; padding: 3px 8px; border-radius: 7px; font-weight: 600; white-space: nowrap; }
-  .vc-venc { background: var(--vermelho-claro); color: var(--vermelho); }
-  .vc-hoje { background: var(--ambar-claro); color: #854F0B; }
-  .vc-ok { background: var(--verde-claro); color: #085041; }
-  .item-acoes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px; }
-  .acao-btn { padding: 8px 4px; border-radius: 8px; border: 1px solid var(--cinza-borda); background: var(--cinza-bg); color: var(--txt-sec); font-size: 11px; font-weight: 500; cursor: pointer; text-align: center; line-height: 1.3; }
-  .acao-btn.a-retirado { background: var(--verde-claro); border-color: var(--verde-borda); color: #085041; }
-  .acao-btn.a-validade-ok { background: var(--ambar-claro); border-color: var(--ambar-borda); color: #854F0B; }
-  .acao-btn.a-nao-tinha { background: #F1EFE8; border-color: var(--cinza-borda-forte); color: var(--txt-sec); }
-  .qtd-row { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--cinza-borda); }
-  .qtd-label { font-size: 12px; color: var(--txt-sec); }
-  .qtd-ctrl { display: flex; align-items: center; gap: 10px; }
-  .qtd-btn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--cinza-borda-forte); background: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--txt-pri); }
-  .qtd-num { font-size: 16px; font-weight: 600; min-width: 22px; text-align: center; }
-  .rodape-conf { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--cinza-borda); padding: 12px 16px 20px; }
-  .resumo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-bottom: 10px; }
-  .resumo-item { display: flex; justify-content: space-between; font-size: 12px; color: var(--txt-sec); }
-  .resumo-item span:last-child { font-weight: 600; }
-  .r-verde { color: var(--verde) !important; }
-  .r-ambar { color: #854F0B !important; }
-  .btn-encerrar { width: 100%; padding: 13px; background: var(--verde); color: #fff; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; }
-  .btn-encerrar:disabled { opacity: .4; cursor: default; }
-
-  /* RELATÓRIO */
-  .relatorio-wrap { max-width: 480px; margin: 0 auto; padding: 24px 16px 40px; }
-  .rel-header { background: var(--verde-claro); border: 1px solid var(--verde-borda); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px; text-align: center; }
-  .rel-icone { font-size: 32px; margin-bottom: 6px; }
-  .rel-titulo { font-size: 18px; font-weight: 600; color: #085041; }
-  .rel-sub { font-size: 13px; color: #0F6E56; margin-top: 2px; }
-  .rel-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
-  .stat-card { background: #fff; border: 1px solid var(--cinza-borda); border-radius: var(--radius); padding: 12px; text-align: center; }
-  .stat-num { font-size: 24px; font-weight: 600; }
-  .stat-label { font-size: 11px; color: var(--txt-sec); margin-top: 2px; }
-  .rel-secao { margin-bottom: 16px; }
-  .rel-secao-titulo { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--txt-sec); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--cinza-borda); }
-  .rel-item { font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--cinza-bg); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .rel-item-nome { flex: 1; }
-  .rel-item-det { font-size: 11px; color: var(--txt-sec); white-space: nowrap; }
-  .btn-wpp { width: 100%; padding: 14px; background: #25D366; color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
-  .btn-nova { width: 100%; padding: 12px; background: #fff; color: var(--txt-pri); border: 1px solid var(--cinza-borda-forte); border-radius: var(--radius); font-size: 15px; font-weight: 500; cursor: pointer; }
-  .vazio { text-align: center; padding: 32px 16px; color: var(--txt-muted); font-size: 14px; }
-  .erro-box { background: var(--vermelho-claro); border: 1px solid #f5c0c0; border-radius: var(--radius); padding: 12px 16px; margin: 16px; font-size: 13px; color: #a32d2d; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a1a; }
+  .header { background: #2e7d32; color: white; padding: 16px; text-align: center; }
+  .header h1 { font-size: 20px; }
+  .header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+  .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+  .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .card h2 { font-size: 15px; color: #333; margin-bottom: 12px; }
+  input[type=text], input[type=date], select {
+    width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px;
+    font-size: 15px; margin-bottom: 10px; background: white;
+  }
+  .btn { display: block; width: 100%; padding: 13px; border: none; border-radius: 8px;
+    font-size: 16px; font-weight: 600; cursor: pointer; text-align: center; margin-bottom: 10px; }
+  .btn-green { background: #2e7d32; color: white; }
+  .btn-blue { background: #1565c0; color: white; }
+  .btn-orange { background: #e65100; color: white; }
+  .btn-gray { background: #757575; color: white; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .category-header {
+    background: #e8f5e9; border-left: 4px solid #2e7d32;
+    padding: 8px 12px; margin: 16px 0 8px 0;
+    border-radius: 0 8px 8px 0; font-weight: 700; font-size: 14px; color: #1b5e20;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .product-card {
+    background: white; border: 1px solid #e0e0e0; border-radius: 10px;
+    padding: 14px; margin-bottom: 10px;
+  }
+  .product-card.done-ok { border-left: 4px solid #43a047; }
+  .product-card.done-ret { border-left: 4px solid #e53935; }
+  .product-card.done-sem { border-left: 4px solid #757575; }
+  .product-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .product-dates { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .btns-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-sm {
+    flex: 1; min-width: 80px; padding: 9px 6px; border: 2px solid #ddd;
+    border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+    background: white; color: #555; transition: all 0.15s;
+  }
+  .btn-sm.active-ok { background: #e8f5e9; border-color: #43a047; color: #2e7d32; }
+  .btn-sm.active-ret { background: #ffebee; border-color: #e53935; color: #c62828; }
+  .btn-sm.active-sem { background: #f5f5f5; border-color: #757575; color: #424242; }
+  .qty-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .qty-row label { font-size: 13px; color: #555; white-space: nowrap; }
+  .qty-row input { width: 70px; padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+  .progress-bar { background: #e0e0e0; border-radius: 10px; height: 8px; margin: 8px 0; overflow: hidden; }
+  .progress-fill { background: #2e7d32; height: 100%; border-radius: 10px; transition: width 0.3s; }
+  .progress-text { font-size: 13px; color: #666; margin-bottom: 12px; }
+  .msg { padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; text-align: center; }
+  .msg-info { background: #e3f2fd; color: #0d47a1; }
+  .msg-ok { background: #e8f5e9; color: #1b5e20; }
+  .msg-err { background: #ffebee; color: #b71c1c; }
+  #manager-section { display: block; }
+  #abast-section { display: none; }
+  #report-section { display: none; }
+  .loja-badge { background: #fff3e0; border: 1px solid #ffb300; border-radius: 20px;
+    padding: 4px 12px; font-size: 13px; font-weight: 600; color: #e65100; display: inline-block; margin-bottom: 8px; }
+  .summary-box { background: #f5f5f5; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+  .summary-row { display: flex; justify-content: space-between; font-size: 14px; padding: 3px 0; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 6px; }
+  .tag-ok { background: #e8f5e9; color: #2e7d32; }
+  .tag-ret { background: #ffebee; color: #c62828; }
+  .tag-sem { background: #f5f5f5; color: #616161; border: 1px solid #ccc; }
 </style>
 </head>
 <body>
 
-<div class="loading-overlay" id="loading">
-  <div class="spinner"></div>
-  <div class="loading-txt" id="loading-txt">Carregando...</div>
-</div>
-
-<!-- GESTOR -->
-<div id="tela-gestor" class="tela">
-<div class="gestor-wrap">
-  <div class="logo">Controle de Validade</div>
-  <h1>Nova conferência</h1>
-  <p class="sub">Selecione a loja e o período para gerar a lista automaticamente da planilha.</p>
-
-  <div class="campo">
-    <label>Loja</label>
-    <input type="text" id="inp-loja" placeholder="Ex: Costa Mare" />
-  </div>
-
-  <div class="campo-row">
-    <div class="campo">
-      <label>Data inicial</label>
-      <input type="date" id="inp-data-ini" />
-      <p class="hint">Padrão: ontem</p>
-    </div>
-    <div class="campo">
-      <label>Retirar até</label>
-      <input type="date" id="inp-data-fim" />
-      <p class="hint">Próxima visita</p>
-    </div>
-  </div>
-
-  <button class="btn-carregar" onclick="carregarPlanilha()">🔄 Carregar produtos da planilha</button>
-  <div class="sheet-status" id="sheet-status"></div>
-  <div class="produtos-preview" id="preview"></div>
-
-  <button class="btn-gerar" id="btn-gerar" onclick="gerarLink()" disabled>Gerar link de conferência</button>
-
-  <div class="link-box" id="link-box">
-    <div class="label">Link gerado — envie pelo WhatsApp</div>
-    <div class="link-url" id="link-url"></div>
-    <div class="btn-row">
-      <button class="btn-sec" onclick="copiarLink()">📋 Copiar link</button>
-      <button class="btn-sec verde" onclick="abrirWpp()">📲 Enviar pelo WhatsApp</button>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ABASTECEDOR -->
-<div id="tela-abast" class="tela">
-  <div class="header-conf">
-    <div class="loja-nome" id="ab-loja">—</div>
-    <div class="loja-meta" id="ab-meta">—</div>
-    <div class="prog-wrap">
-      <div class="prog-nums"><span>Conferidos</span><span id="ab-cont">0 / 0</span></div>
-      <div class="prog-bar"><div class="prog-fill" id="ab-barra" style="width:0%"></div></div>
-    </div>
-  </div>
-  <div class="filtros-wrap">
-    <button class="filtro-btn ativo" onclick="filtrar('todos',this)">Todos</button>
-    <button class="filtro-btn" onclick="filtrar('pendente',this)">Pendentes</button>
-    <button class="filtro-btn" onclick="filtrar('retirado',this)">Retirados</button>
-    <button class="filtro-btn" onclick="filtrar('validade-ok',this)">Validade ok</button>
-    <button class="filtro-btn" onclick="filtrar('nao-tinha',this)">Sem estoque</button>
-  </div>
-  <div class="lista-wrap" id="ab-lista"></div>
-  <div class="rodape-conf">
-    <div class="resumo-grid">
-      <div class="resumo-item"><span>Retirados</span><span id="r-ret" class="r-verde">0</span></div>
-      <div class="resumo-item"><span>Validade ok</span><span id="r-nret" class="r-ambar">0</span></div>
-      <div class="resumo-item"><span>Sem estoque</span><span id="r-sem">0</span></div>
-      <div class="resumo-item"><span>Pendentes</span><span id="r-pend">0</span></div>
-    </div>
-    <button class="btn-encerrar" id="btn-encerrar" onclick="encerrar()">Encerrar conferência</button>
-  </div>
-</div>
-
-<!-- RELATÓRIO -->
-<div id="tela-relatorio" class="tela">
-<div class="relatorio-wrap">
-  <div class="rel-header">
-    <div class="rel-icone">✅</div>
-    <div class="rel-titulo" id="rel-titulo">Conferência encerrada</div>
-    <div class="rel-sub" id="rel-sub">—</div>
-  </div>
-  <div class="rel-stats">
-    <div class="stat-card"><div class="stat-num r-verde" id="rs-ret">0</div><div class="stat-label">Retirados</div></div>
-    <div class="stat-card"><div class="stat-num r-ambar" id="rs-nret">0</div><div class="stat-label">Validade ok</div></div>
-    <div class="stat-card"><div class="stat-num" id="rs-sem">0</div><div class="stat-label">Sem estoque</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--vermelho)" id="rs-pend">0</div><div class="stat-label">Não conferidos</div></div>
-  </div>
-  <div id="rel-corpo"></div>
-  <button class="btn-wpp" onclick="enviarWpp()">📲 Enviar relatório pelo WhatsApp</button>
-  <button class="btn-nova" onclick="novaConferencia()">+ Nova conferência</button>
-</div>
-</div>
-
+<!-- FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAOJpE4-535Ea18YOiMq5ute4dsRbH6ybc",
@@ -238,437 +89,474 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+window._db = db;
+window._doc = doc;
+window._setDoc = setDoc;
+window._getDoc = getDoc;
+window._firebaseReady = true;
+window.dispatchEvent(new Event('firebaseReady'));
+</script>
 
-// Config planilha
+<div class="header">
+  <h1>📦 Conferência de Validades</h1>
+  <p>Capixaba Micromarket</p>
+</div>
+
+<div class="container">
+
+<!-- SEÇÃO GESTOR -->
+<div id="manager-section">
+  <div class="card">
+    <h2>⚙️ Gerar link para conferência</h2>
+    <label style="font-size:13px;color:#555;display:block;margin-bottom:4px;">Nome da loja</label>
+    <input type="text" id="loja-input" placeholder="Ex: Costa Mare" />
+    <label style="font-size:13px;color:#555;display:block;margin-bottom:4px;">Data inicial</label>
+    <input type="date" id="data-ini" />
+    <label style="font-size:13px;color:#555;display:block;margin-bottom:4px;">Data final</label>
+    <input type="date" id="data-fim" />
+    <div id="manager-msg"></div>
+    <button class="btn btn-green" id="btn-gerar" onclick="gerarLink()">Gerar link</button>
+    <div id="link-box" style="display:none;">
+      <div class="msg msg-ok" id="link-display" style="word-break:break-all;text-align:left;"></div>
+      <button class="btn btn-blue" onclick="copiarLink()">📋 Copiar link</button>
+      <button class="btn btn-orange" onclick="enviarWhatsApp()">📲 Enviar pelo WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- SEÇÃO ABASTECEDOR -->
+<div id="abast-section">
+  <div class="card" id="store-info-card">
+    <div id="loja-badge-div"></div>
+    <div id="periodo-div" style="font-size:13px;color:#666;margin-bottom:8px;"></div>
+    <div class="progress-text" id="progress-text">Carregando...</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+  <div id="abast-msg"></div>
+  <div id="products-list"></div>
+  <div style="margin-top:16px;">
+    <button class="btn btn-green" id="btn-finalizar" onclick="finalizarConferencia()" disabled>✅ Finalizar e enviar relatório</button>
+  </div>
+</div>
+
+<!-- SEÇÃO RELATÓRIO -->
+<div id="report-section">
+  <div class="card">
+    <h2>✅ Conferência finalizada!</h2>
+    <div id="report-content"></div>
+    <button class="btn btn-orange" id="btn-whats-report" onclick="enviarRelatorioWhats()">📲 Enviar relatório pelo WhatsApp</button>
+    <button class="btn btn-gray" onclick="voltarInicio()">🔄 Nova conferência</button>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
 const SHEET_ID = '1s5cnwzbj0pHJibKJIfX-adqMHw0AQFh3';
-const SHEET_NAME = 'Controle de Validades';
+const SHEET_VALIDADES = 'Controle de Validades';
+const SHEET_PRODUTOS = 'Produtos';
 
-let conferencia = null;
-let filtroAtivo = 'todos';
-let confId = null;
-let produtosCarregados = [];
+let currentConf = null;
+let produtos = []; // lista carregada do sheets
+let categoriasMap = {}; // nome produto (lowercase) -> tipo de produto
 
-// ── Utilitários de data ──
-function parseDataSheet(str) {
-  if (!str || str.trim() === '') return null;
-  // Formato DD/MM/YYYY
-  const m = str.trim().match(/^(\d{1,2})\/(\d{2})\/(\d{4})$/);
-  if (m) return { dia: parseInt(m[1]), mes: parseInt(m[2]), ano: parseInt(m[3]) };
-  // Formato DD/MM/YY
-  const m2 = str.trim().match(/^(\d{1,2})\/(\d{2})\/(\d{2})$/);
-  if (m2) return { dia: parseInt(m2[1]), mes: parseInt(m2[2]), ano: 2000 + parseInt(m2[3]) };
-  return null;
+// ─── Utilitários ─────────────────────────────────────────────────────────────
+
+function fmtDate(d) {
+  if (!d) return '';
+  const [y, m, dia] = d.split('-');
+  return `${dia}/${m}/${y}`;
 }
 
-function dataParaTimestamp(d) {
-  if (!d) return null;
-  return new Date(d.ano, d.mes - 1, d.dia).getTime();
-}
-
-function hoje() {
-  const d = new Date();
-  return { dia: d.getDate(), mes: d.getMonth() + 1, ano: d.getFullYear() };
-}
-
-function diasDiff(data) {
-  if (!data) return 99;
-  const h = hoje();
-  const a = new Date(data.ano, data.mes - 1, data.dia);
-  const b = new Date(h.ano, h.mes - 1, h.dia);
-  return Math.round((a - b) / 86400000);
-}
-
-function fmtData(data) {
-  if (!data) return '—';
-  return String(data.dia).padStart(2,'0') + '/' + String(data.mes).padStart(2,'0');
-}
-
-function fmtDataCompleta(data) {
-  if (!data) return '—';
-  return String(data.dia).padStart(2,'0') + '/' + String(data.mes).padStart(2,'0') + '/' + data.ano;
-}
-
-function inputParaData(val) {
-  if (!val) return null;
-  const [a, m, d] = val.split('-');
-  return { dia: parseInt(d), mes: parseInt(m), ano: parseInt(a) };
-}
-
-function chipVence(data) {
-  const d = diasDiff(data);
-  const cls = d < 0 ? 'vc-venc' : d <= 1 ? 'vc-hoje' : 'vc-ok';
-  const label = d < 0 ? `Vencido ${fmtData(data)}` : d === 0 ? 'Hoje' : d === 1 ? `Amanhã ${fmtData(data)}` : fmtData(data);
-  return `<span class="vence-chip ${cls}">${label}</span>`;
-}
-
-function loading(show, txt) {
-  document.getElementById('loading').classList.toggle('hidden', !show);
-  if (txt) document.getElementById('loading-txt').textContent = txt;
-}
-
-function mostrarTela(id) {
-  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-  document.getElementById(id).classList.add('ativa');
-  window.scrollTo(0, 0);
-}
-
-// ── CARREGAR PLANILHA ──
-window.carregarPlanilha = async function() {
-  const ini = document.getElementById('inp-data-ini').value;
-  const fim = document.getElementById('inp-data-fim').value;
-  const statusEl = document.getElementById('sheet-status');
-  const previewEl = document.getElementById('preview');
-
-  if (!ini || !fim) {
-    statusEl.className = 'sheet-status erro';
-    statusEl.textContent = 'Preencha as datas inicial e final antes de carregar.';
-    return;
+function parseDateBR(s) {
+  if (!s) return null;
+  s = s.trim();
+  if (s.includes('/')) {
+    const [d, m, y] = s.split('/');
+    return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
   }
+  return s;
+}
 
-  const dataIni = inputParaData(ini);
-  const dataFim = inputParaData(fim);
-  const tsIni = dataParaTimestamp(dataIni);
-  const tsFim = dataParaTimestamp(dataFim);
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = `<div class="msg msg-${type}">${text}</div>`;
+}
 
-  statusEl.className = 'sheet-status carregando';
-  statusEl.textContent = '⏳ Carregando planilha...';
-  previewEl.classList.remove('visivel');
-  previewEl.innerHTML = '';
+function genId() {
+  return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+}
 
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error('Erro HTTP ' + resp.status);
-    const csv = await resp.text();
+// ─── Sheets fetch ─────────────────────────────────────────────────────────────
 
-    const linhas = parseCSV(csv);
-    if (linhas.length < 2) throw new Error('Planilha vazia ou formato inesperado.');
-
-    // Encontra o cabeçalho — procura a linha com "Código Prod" ou similar
-    let headerIdx = 0;
-    for (let i = 0; i < Math.min(5, linhas.length); i++) {
-      const row = linhas[i].map(c => c.toLowerCase());
-      if (row.some(c => c.includes('código') || c.includes('codigo') || c.includes('validade'))) {
-        headerIdx = i; break;
-      }
-    }
-
-    // Colunas: A=0 Código, B=1 Nome, E=4 Validade, F=5 Data02, G=6 Data03, H=7 Data04, I=8 Data05
-    const mapa = {};
-
-    for (let i = headerIdx + 1; i < linhas.length; i++) {
-      const row = linhas[i];
-      const nome = (row[1] || '').trim();
-      if (!nome) continue;
-
-      // Coleta todas as datas da linha (colunas E a I = índices 4 a 8)
-      const datas = [];
-      for (let c = 4; c <= 8; c++) {
-        const d = parseDataSheet(row[c] || '');
-        if (d) {
-          const ts = dataParaTimestamp(d);
-          if (ts >= tsIni && ts <= tsFim) datas.push(d);
-        }
-      }
-
-      if (!datas.length) continue;
-
-      // Agrupa por nome (normalizado)
-      const key = nome.toLowerCase().trim();
-      if (!mapa[key]) {
-        mapa[key] = { nome, datas: [] };
-      }
-      // Adiciona datas não duplicadas
-      datas.forEach(d => {
-        const ts = dataParaTimestamp(d);
-        if (!mapa[key].datas.find(x => dataParaTimestamp(x) === ts)) {
-          mapa[key].datas.push(d);
-        }
-      });
-    }
-
-    produtosCarregados = Object.values(mapa).map(p => ({
-      nome: p.nome,
-      datas: p.datas.sort((a, b) => dataParaTimestamp(a) - dataParaTimestamp(b))
-    }));
-
-    if (!produtosCarregados.length) {
-      statusEl.className = 'sheet-status erro';
-      statusEl.textContent = `Nenhum produto com validade entre ${fmtDataCompleta(dataIni)} e ${fmtDataCompleta(dataFim)}.`;
-      document.getElementById('btn-gerar').disabled = true;
-      return;
-    }
-
-    statusEl.className = 'sheet-status ok';
-    statusEl.textContent = `✓ ${produtosCarregados.length} produto(s) encontrados no período.`;
-
-    // Preview
-    previewEl.innerHTML = `<div class="preview-count">${produtosCarregados.length} produtos para conferir</div>` +
-      produtosCarregados.slice(0, 20).map(p =>
-        `<div class="preview-item"><span>${p.nome}</span><span>${p.datas.map(fmtData).join(' · ')}</span></div>`
-      ).join('') +
-      (produtosCarregados.length > 20 ? `<div class="preview-item" style="color:var(--txt-muted)">... e mais ${produtosCarregados.length - 20}</div>` : '');
-    previewEl.classList.add('visivel');
-    document.getElementById('btn-gerar').disabled = false;
-
-  } catch(e) {
-    console.error(e);
-    statusEl.className = 'sheet-status erro';
-    statusEl.textContent = 'Erro ao carregar planilha: ' + e.message;
-    document.getElementById('btn-gerar').disabled = true;
-  }
-};
+async function fetchSheetCSV(sheetName) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.text();
+}
 
 function parseCSV(text) {
   const rows = [];
-  let row = [], cell = '', inQ = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (c === '"') { inQ = !inQ; continue; }
-    if (c === ',' && !inQ) { row.push(cell); cell = ''; continue; }
-    if ((c === '\n' || c === '\r') && !inQ) {
-      row.push(cell); rows.push(row); row = []; cell = '';
-      if (c === '\r' && text[i+1] === '\n') i++;
-      continue;
+  const lines = text.split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cols = [];
+    let inQ = false, cell = '';
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQ = !inQ; continue; }
+      if (c === ',' && !inQ) { cols.push(cell.trim()); cell = ''; continue; }
+      cell += c;
     }
-    cell += c;
+    cols.push(cell.trim());
+    rows.push(cols);
   }
-  if (cell || row.length) { row.push(cell); rows.push(row); }
   return rows;
 }
 
-// ── GESTOR: gerar link ──
-window.gerarLink = async function() {
-  const loja = document.getElementById('inp-loja').value.trim();
-  const fim = document.getElementById('inp-data-fim').value;
-  if (!loja) { alert('Informe o nome da loja.'); return; }
-  if (!produtosCarregados.length) { alert('Carregue os produtos da planilha primeiro.'); return; }
+// ─── Carregar categorias do Produtos ─────────────────────────────────────────
 
-  loading(true, 'Salvando conferência...');
-  const id = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
-  const dataFim = inputParaData(fim);
-  const dados = {
-    id, loja, dataLimite: dataFim,
-    produtos: produtosCarregados,
-    estado: produtosCarregados.map(() => ({ status: 'pendente', qtd: 1 })),
-    encerrada: false, criadaEm: Date.now()
-  };
+async function carregarCategorias() {
   try {
-    await setDoc(doc(db, 'conferencias', id), dados);
-    const url = window.location.origin + window.location.pathname + '?conf=' + id;
-    document.getElementById('link-url').textContent = url;
-    document.getElementById('link-box').classList.add('visivel');
-    window._linkAtual = url;
-    window._lojaAtual = loja;
-  } catch(e) { alert('Erro ao salvar: ' + e.message); }
-  loading(false);
-};
-
-window.copiarLink = () => navigator.clipboard.writeText(window._linkAtual||'').then(() => alert('Link copiado!'));
-window.abrirWpp = () => {
-  const msg = encodeURIComponent('📋 *Conferência de validade — ' + (window._lojaAtual||'') + '*\n\nAcesse o link para conferir:\n' + (window._linkAtual||''));
-  window.open('https://wa.me/?text=' + msg, '_blank');
-};
-
-// ── ABASTECEDOR ──
-window.setStatus = async function(i, s) {
-  conferencia.estado[i].status = s;
-  renderAbast();
-  await salvarEstado();
-};
-window.setQtd = async function(i, delta) {
-  conferencia.estado[i].qtd = Math.max(1, (conferencia.estado[i].qtd||1) + delta);
-  renderAbast();
-  await salvarEstado();
-};
-async function salvarEstado() {
-  if (!confId) return;
-  try { await updateDoc(doc(db, 'conferencias', confId), { estado: conferencia.estado }); }
-  catch(e) { console.error(e); }
-}
-window.filtrar = function(tipo, el) {
-  filtroAtivo = tipo;
-  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
-  el.classList.add('ativo');
-  renderAbast();
-};
-
-function renderAbast() {
-  const c = conferencia, est = c.estado, total = c.produtos.length;
-  const conf  = est.filter(e => e.status !== 'pendente').length;
-  const ret   = est.filter(e => e.status === 'retirado').length;
-  const nret  = est.filter(e => e.status === 'validade-ok').length;
-  const sem   = est.filter(e => e.status === 'nao-tinha').length;
-  const pend  = total - conf;
-
-  document.getElementById('ab-loja').textContent = c.loja;
-  document.getElementById('ab-meta').textContent = 'Retirar vencidos até ' + fmtData(c.dataLimite);
-  document.getElementById('ab-cont').textContent = conf + ' / ' + total;
-  document.getElementById('ab-barra').style.width = Math.round(conf/total*100) + '%';
-  document.getElementById('r-ret').textContent  = ret;
-  document.getElementById('r-nret').textContent = nret;
-  document.getElementById('r-sem').textContent  = sem;
-  document.getElementById('r-pend').textContent = pend;
-
-  const btn = document.getElementById('btn-encerrar');
-  btn.disabled = conf === 0;
-  btn.textContent = pend > 0 ? `Encerrar (${pend} pendentes)` : 'Encerrar conferência';
-
-  // Agrupa por data mais próxima do produto
-  const grupos = {};
-  c.produtos.forEach((p, i) => {
-    const s = est[i].status;
-    if (filtroAtivo !== 'todos' && filtroAtivo !== s) return;
-    const dataPrincipal = p.datas && p.datas.length ? p.datas[0] : null;
-    const k = dataPrincipal ? fmtData(dataPrincipal) : 'Sem data';
-    if (!grupos[k]) grupos[k] = { data: dataPrincipal, itens: [] };
-    grupos[k].itens.push({ ...p, i, s, qtd: est[i].qtd||1 });
-    grupos[k].itens.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
-  });
-
-  const chaves = Object.keys(grupos).sort((a,b) => {
-    const da = grupos[a].data, db2 = grupos[b].data;
-    if (!da) return 1; if (!db2) return -1;
-    return dataParaTimestamp(da) - dataParaTimestamp(db2);
-  });
-
-  let html = '';
-  chaves.forEach(k => {
-    const g = grupos[k];
-    const d = diasDiff(g.data);
-    const urg = d < 0 ? '<span class="badge-urg">Vencido</span>' : d === 0 ? '<span class="badge-urg">Hoje</span>' : '';
-    html += `<div class="grupo-titulo">${k}${urg}</div>`;
-    g.itens.forEach(p => {
-      const cls = p.s==='retirado' ? 's-retirado' : p.s==='validade-ok' ? 's-validade-ok' : p.s==='nao-tinha' ? 's-nao-tinha' : '';
-      const nomeCls = p.s==='nao-tinha' ? 'riscado' : '';
-      const datasHtml = (p.datas||[]).map(d => chipVence(d)).join('');
-      html += `<div class="item-card ${cls}">
-        <div class="item-topo">
-          <div style="flex:1">
-            <div class="item-nome ${nomeCls}">${p.nome}</div>
-            <div class="datas-chips">${datasHtml}</div>
-          </div>
-        </div>
-        <div class="item-acoes">
-          <button class="acao-btn ${p.s==='retirado'?'a-retirado':''}" onclick="setStatus(${p.i},'retirado')">✓ Retirei</button>
-          <button class="acao-btn ${p.s==='validade-ok'?'a-validade-ok':''}" onclick="setStatus(${p.i},'validade-ok')">👍 Validade ok</button>
-          <button class="acao-btn ${p.s==='nao-tinha'?'a-nao-tinha':''}" onclick="setStatus(${p.i},'nao-tinha')">✕ Sem estoque</button>
-        </div>
-        ${p.s==='retirado' ? `<div class="qtd-row">
-          <span class="qtd-label">Quantidade retirada</span>
-          <div class="qtd-ctrl">
-            <button class="qtd-btn" onclick="setQtd(${p.i},-1)">−</button>
-            <span class="qtd-num">${p.qtd}</span>
-            <button class="qtd-btn" onclick="setQtd(${p.i},+1)">+</button>
-          </div>
-        </div>` : ''}
-      </div>`;
-    });
-  });
-
-  if (!chaves.length) html = '<div class="vazio">Nenhum item neste filtro.</div>';
-  document.getElementById('ab-lista').innerHTML = html;
-}
-
-window.encerrar = async function() {
-  const pend = conferencia.estado.filter(e => e.status === 'pendente').length;
-  if (pend > 0 && !confirm(`${pend} produto(s) ainda não conferidos. Encerrar mesmo assim?`)) return;
-  loading(true, 'Salvando relatório...');
-  conferencia.encerrada = true;
-  conferencia.encerradaEm = Date.now();
-  try { await updateDoc(doc(db, 'conferencias', confId), { encerrada: true, encerradaEm: conferencia.encerradaEm, estado: conferencia.estado }); }
-  catch(e) { console.error(e); }
-  loading(false);
-  mostrarRelatorio();
-};
-
-function mostrarRelatorio() {
-  const c = conferencia, est = c.estado;
-  const ret  = c.produtos.filter((_,i) => est[i].status==='retirado');
-  const nret = c.produtos.filter((_,i) => est[i].status==='validade-ok');
-  const sem  = c.produtos.filter((_,i) => est[i].status==='nao-tinha');
-  const pend = c.produtos.filter((_,i) => est[i].status==='pendente');
-
-  document.getElementById('rel-titulo').textContent = c.loja + ' — conferência encerrada';
-  document.getElementById('rel-sub').textContent = 'Vencidos até ' + fmtData(c.dataLimite);
-  document.getElementById('rs-ret').textContent  = ret.length;
-  document.getElementById('rs-nret').textContent = nret.length;
-  document.getElementById('rs-sem').textContent  = sem.length;
-  document.getElementById('rs-pend').textContent = pend.length;
-
-  let html = '';
-  const secao = (cor, titulo, lista, detalhe) => {
-    if (!lista.length) return '';
-    return `<div class="rel-secao"><div class="rel-secao-titulo" style="color:${cor}">${titulo} (${lista.length})</div>` +
-      lista.map(p => { const i=c.produtos.indexOf(p); return `<div class="rel-item"><span class="rel-item-nome">${p.nome}</span><span class="rel-item-det">${detalhe(p,i)}</span></div>`; }).join('') +
-      '</div>';
-  };
-  html += secao('var(--verde)', '✓ Retirados', ret, (p,i) => (est[i].qtd||1)+' un.');
-  html += secao('#854F0B', '👍 Validade ok', nret, p => (p.datas||[]).map(fmtData).join(' · '));
-  html += secao('var(--txt-sec)', '✕ Sem estoque', sem, p => (p.datas||[]).map(fmtData).join(' · '));
-  html += secao('var(--vermelho)', '⚠ Não conferidos', pend, p => (p.datas||[]).map(fmtData).join(' · '));
-  document.getElementById('rel-corpo').innerHTML = html;
-  mostrarTela('tela-relatorio');
-}
-
-window.enviarWpp = function() {
-  const c = conferencia, est = c.estado;
-  const ret  = c.produtos.filter((_,i) => est[i].status==='retirado');
-  const nret = c.produtos.filter((_,i) => est[i].status==='validade-ok');
-  const sem  = c.produtos.filter((_,i) => est[i].status==='nao-tinha');
-  const pend = c.produtos.filter((_,i) => est[i].status==='pendente');
-  let msg = `🏪 *${c.loja}* — Conferência de validade\n📅 Vencidos até ${fmtData(c.dataLimite)}\n\n`;
-  if (ret.length)  { msg+=`✅ *Retirados (${ret.length}):*\n`;  ret.forEach(p=>{const i=c.produtos.indexOf(p);msg+=`- ${p.nome} — ${est[i].qtd||1} un.\n`;}); msg+='\n'; }
-  if (nret.length) { msg+=`👍 *Validade ok (${nret.length}):*\n`; nret.forEach(p=>msg+=`- ${p.nome}\n`); msg+='\n'; }
-  if (sem.length)  { msg+=`📭 *Sem estoque (${sem.length}):*\n`; sem.forEach(p=>msg+=`- ${p.nome}\n`); msg+='\n'; }
-  if (pend.length) { msg+=`❌ *Não conferidos (${pend.length}):*\n`; pend.forEach(p=>msg+=`- ${p.nome}\n`); }
-  window.open('https://wa.me/?text='+encodeURIComponent(msg), '_blank');
-};
-
-window.novaConferencia = function() {
-  conferencia=null; confId=null; produtosCarregados=[];
-  document.getElementById('inp-loja').value='';
-  document.getElementById('sheet-status').className='sheet-status';
-  document.getElementById('preview').classList.remove('visivel');
-  document.getElementById('link-box').classList.remove('visivel');
-  document.getElementById('btn-gerar').disabled=true;
-  mostrarTela('tela-gestor');
-};
-
-// ── INICIALIZAÇÃO ──
-async function init() {
-  const params = new URLSearchParams(window.location.search);
-  confId = params.get('conf');
-
-  // Datas padrão
-  const ontem = new Date(); ontem.setDate(ontem.getDate()-1);
-  const amanha = new Date(); amanha.setDate(amanha.getDate()+1);
-  document.getElementById('inp-data-ini').value = ontem.toISOString().split('T')[0];
-  document.getElementById('inp-data-fim').value = amanha.toISOString().split('T')[0];
-
-  if (confId) {
-    loading(true, 'Carregando conferência...');
-    try {
-      const snap = await getDoc(doc(db, 'conferencias', confId));
-      if (snap.exists()) {
-        conferencia = snap.data();
-        loading(false);
-        conferencia.encerrada ? mostrarRelatorio() : (mostrarTela('tela-abast'), renderAbast());
-      } else {
-        loading(false);
-        document.body.innerHTML = '<div class="erro-box" style="margin:32px auto;max-width:400px">Conferência não encontrada.</div>';
+    const csv = await fetchSheetCSV(SHEET_PRODUTOS);
+    const rows = parseCSV(csv);
+    // Col A=Código Grade, Col B=Descrição Produto, Col C=Tipo de Produto
+    // Skip header row
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      const nome = (row[1] || '').trim();
+      const tipo = (row[2] || '').trim();
+      if (nome) {
+        categoriasMap[nome.toLowerCase()] = tipo || 'Outros';
       }
-    } catch(e) {
-      loading(false);
-      document.body.innerHTML = '<div class="erro-box" style="margin:32px auto;max-width:400px">Erro ao carregar. Verifique sua conexão.</div>';
     }
-  } else {
-    loading(false);
-    mostrarTela('tela-gestor');
+  } catch (e) {
+    console.warn('Não foi possível carregar categorias:', e);
+    // continua sem categorias
   }
 }
 
-init();
+function getCategoria(nomeProduto) {
+  const key = (nomeProduto || '').toLowerCase();
+  return categoriasMap[key] || 'Outros';
+}
+
+// ─── Carregar validades do Sheets ─────────────────────────────────────────────
+
+async function carregarProdutos(dataIni, dataFim) {
+  const csv = await fetchSheetCSV(SHEET_VALIDADES);
+  const rows = parseCSV(csv);
+  // Col A=Código Prod, Col B=Nome, Col E=Validade, Col F..I=datas adicionais
+  // rows[0] = header
+
+  const map = {}; // nome -> {codigo, nome, datas:[]}
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const codigo = (row[0] || '').trim();
+    const nome = (row[1] || '').trim();
+    if (!nome) continue;
+
+    const dataCols = [row[4], row[5], row[6], row[7], row[8]].map(d => parseDateBR(d)).filter(d => d);
+
+    // Filtrar datas no intervalo
+    const datasNoIntervalo = dataCols.filter(d => {
+      if (!d) return false;
+      if (dataIni && d < dataIni) return false;
+      if (dataFim && d > dataFim) return false;
+      return true;
+    });
+
+    if (datasNoIntervalo.length === 0) continue;
+
+    const key = nome.toLowerCase();
+    if (!map[key]) {
+      map[key] = { codigo, nome, datas: [] };
+    }
+    for (const d of datasNoIntervalo) {
+      if (!map[key].datas.includes(d)) map[key].datas.push(d);
+    }
+  }
+
+  // Converter para array
+  const lista = Object.values(map).map(p => ({
+    ...p,
+    datas: p.datas.sort(),
+    estado: null,
+    qtd: ''
+  }));
+
+  return lista;
+}
+
+// ─── GESTOR: gerar link ───────────────────────────────────────────────────────
+
+async function gerarLink() {
+  const loja = document.getElementById('loja-input').value.trim();
+  const dataIni = document.getElementById('data-ini').value;
+  const dataFim = document.getElementById('data-fim').value;
+
+  if (!loja) { showMsg('manager-msg','Informe o nome da loja','err'); return; }
+  if (!dataFim) { showMsg('manager-msg','Informe a data final','err'); return; }
+
+  showMsg('manager-msg','Carregando produtos...','info');
+  document.getElementById('btn-gerar').disabled = true;
+
+  try {
+    const lista = await carregarProdutos(dataIni || null, dataFim);
+    if (lista.length === 0) { showMsg('manager-msg','Nenhum produto encontrado no período','err'); document.getElementById('btn-gerar').disabled=false; return; }
+
+    const id = genId();
+    const data = { loja, dataIni: dataIni||'', dataFim, produtos: lista, criado: Date.now() };
+
+    await waitFirebase();
+    const ref = window._doc(window._db, 'conferencias', id);
+    await window._setDoc(ref, data);
+
+    const url = `${location.origin}${location.pathname}?conf=${id}`;
+    window._geradoLink = url;
+    window._geradoLoja = loja;
+
+    document.getElementById('link-display').textContent = url;
+    document.getElementById('link-box').style.display = 'block';
+    showMsg('manager-msg', `${lista.length} produto(s) carregado(s)`, 'ok');
+  } catch(e) {
+    showMsg('manager-msg', 'Erro: ' + e.message, 'err');
+  }
+  document.getElementById('btn-gerar').disabled = false;
+}
+
+function copiarLink() {
+  navigator.clipboard.writeText(window._geradoLink).then(() => {
+    showMsg('manager-msg','Link copiado!','ok');
+  }).catch(() => {
+    showMsg('manager-msg','Não foi possível copiar automaticamente. Copie o link acima manualmente.','info');
+  });
+}
+
+function enviarWhatsApp() {
+  const msg = encodeURIComponent(`Olá! Segue o link para conferência da loja ${window._geradoLoja}:\n${window._geradoLink}`);
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
+// ─── ABASTECEDOR: carregar conferência ────────────────────────────────────────
+
+async function waitFirebase() {
+  if (window._firebaseReady) return;
+  return new Promise(r => window.addEventListener('firebaseReady', r, {once:true}));
+}
+
+async function carregarConferencia(confId) {
+  document.getElementById('manager-section').style.display = 'none';
+  document.getElementById('abast-section').style.display = 'block';
+  showMsg('abast-msg','Carregando conferência...','info');
+
+  try {
+    await waitFirebase();
+    const ref = window._doc(window._db, 'conferencias', confId);
+    const snap = await window._getDoc(ref);
+    if (!snap.exists()) { showMsg('abast-msg','Conferência não encontrada. Verifique o link.','err'); return; }
+
+    currentConf = { id: confId, ...snap.data() };
+    produtos = currentConf.produtos;
+
+    // Carregar categorias em paralelo
+    await carregarCategorias();
+
+    document.getElementById('loja-badge-div').innerHTML = `<div class="loja-badge">🏪 ${currentConf.loja}</div>`;
+    const per = currentConf.dataIni
+      ? `Período: ${fmtDate(currentConf.dataIni)} a ${fmtDate(currentConf.dataFim)}`
+      : `Até: ${fmtDate(currentConf.dataFim)}`;
+    document.getElementById('periodo-div').textContent = per;
+
+    document.getElementById('abast-msg').innerHTML = '';
+    renderAbast();
+  } catch(e) {
+    showMsg('abast-msg','Erro ao carregar: ' + e.message,'err');
+  }
+}
+
+// ─── ABASTECEDOR: renderizar produtos ─────────────────────────────────────────
+
+function renderAbast() {
+  const total = produtos.length;
+  const feitos = produtos.filter(p => p.estado !== null).length;
+  const pct = total ? Math.round(feitos/total*100) : 0;
+
+  document.getElementById('progress-text').textContent = `${feitos} de ${total} conferidos (${pct}%)`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('btn-finalizar').disabled = feitos < total;
+
+  // Agrupar por categoria (N1), ordenar alfabético dentro (N2)
+  const grupos = {};
+  for (const p of produtos) {
+    const cat = getCategoria(p.nome);
+    if (!grupos[cat]) grupos[cat] = [];
+    grupos[cat].push(p);
+  }
+
+  // Ordenar categorias alfabeticamente, dentro de cada uma ordenar por nome
+  const cats = Object.keys(grupos).sort((a, b) => {
+    if (a === 'Outros') return 1;
+    if (b === 'Outros') return -1;
+    return a.localeCompare(b, 'pt-BR');
+  });
+
+  let html = '';
+  for (const cat of cats) {
+    const itens = grupos[cat].sort((a,b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    html += `<div class="category-header">📂 ${cat}</div>`;
+    for (const p of itens) {
+      const idx = produtos.indexOf(p);
+      const datesStr = p.datas.map(d => fmtDate(d)).join(' | ');
+      let cardClass = '';
+      if (p.estado === 'ok') cardClass = 'done-ok';
+      else if (p.estado === 'ret') cardClass = 'done-ret';
+      else if (p.estado === 'sem') cardClass = 'done-sem';
+
+      const activeOk = p.estado === 'ok' ? 'active-ok' : '';
+      const activeRet = p.estado === 'ret' ? 'active-ret' : '';
+      const activeSem = p.estado === 'sem' ? 'active-sem' : '';
+      const qtdRow = p.estado === 'ret' ? `
+        <div class="qty-row">
+          <label>Qtd retirada:</label>
+          <input type="number" min="1" value="${p.qtd||''}" onchange="setQtd(${idx}, this.value)" />
+        </div>` : '';
+
+      html += `
+        <div class="product-card ${cardClass}" id="card-${idx}">
+          <div class="product-name">${p.nome}</div>
+          <div class="product-dates">📅 ${datesStr}</div>
+          <div class="btns-row">
+            <button class="btn-sm ${activeOk}" onclick="setEstado(${idx},'ok')">✅ Validade ok</button>
+            <button class="btn-sm ${activeRet}" onclick="setEstado(${idx},'ret')">🗑️ Retirei</button>
+            <button class="btn-sm ${activeSem}" onclick="setEstado(${idx},'sem')">❌ Sem estoque</button>
+          </div>
+          ${qtdRow}
+        </div>`;
+    }
+  }
+
+  document.getElementById('products-list').innerHTML = html;
+}
+
+function setEstado(idx, estado) {
+  produtos[idx].estado = estado;
+  if (estado !== 'ret') produtos[idx].qtd = '';
+  renderAbast();
+  // Scroll para o próximo não conferido
+  const proximo = produtos.findIndex((p, i) => i > idx && p.estado === null);
+  if (proximo >= 0) {
+    setTimeout(() => {
+      const el = document.getElementById(`card-${proximo}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }
+}
+
+function setQtd(idx, val) {
+  produtos[idx].qtd = val;
+}
+
+// ─── Finalizar conferência ─────────────────────────────────────────────────────
+
+async function finalizarConferencia() {
+  document.getElementById('btn-finalizar').disabled = true;
+  showMsg('abast-msg','Salvando...','info');
+
+  try {
+    await waitFirebase();
+    const ref = window._doc(window._db, 'conferencias', currentConf.id);
+    await window._setDoc(ref, { ...currentConf, produtos, finalizado: Date.now() });
+    showMsg('abast-msg','','info');
+    mostrarRelatorio();
+  } catch(e) {
+    showMsg('abast-msg','Erro ao salvar: ' + e.message,'err');
+    document.getElementById('btn-finalizar').disabled = false;
+  }
+}
+
+function mostrarRelatorio() {
+  document.getElementById('abast-section').style.display = 'none';
+  document.getElementById('report-section').style.display = 'block';
+
+  const retirados = produtos.filter(p => p.estado === 'ret');
+  const ok = produtos.filter(p => p.estado === 'ok');
+  const sem = produtos.filter(p => p.estado === 'sem');
+
+  let html = `
+    <div class="loja-badge">🏪 ${currentConf.loja}</div>
+    <div class="summary-box">
+      <div class="summary-row"><span>Total conferido</span><span>${produtos.length} itens</span></div>
+      <div class="summary-row"><span>Validade ok <span class="tag tag-ok">${ok.length}</span></span></div>
+      <div class="summary-row"><span>Retirados <span class="tag tag-ret">${retirados.length}</span></span></div>
+      <div class="summary-row"><span>Sem estoque <span class="tag tag-sem">${sem.length}</span></span></div>
+    </div>`;
+
+  if (retirados.length > 0) {
+    html += `<div style="margin-bottom:8px;font-weight:600;">🗑️ Retirados:</div>`;
+    for (const p of retirados) {
+      const qtdStr = p.qtd ? ` (${p.qtd} un)` : '';
+      html += `<div style="font-size:14px;padding:4px 0;border-bottom:1px solid #eee;">${p.nome}${qtdStr}</div>`;
+    }
+  }
+
+  document.getElementById('report-content').innerHTML = html;
+}
+
+function enviarRelatorioWhats() {
+  const retirados = produtos.filter(p => p.estado === 'ret');
+  const ok = produtos.filter(p => p.estado === 'ok');
+  const sem = produtos.filter(p => p.estado === 'sem');
+
+  const now = new Date();
+  const dataHora = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+
+  let msg = `*CONFERENCIA DE VALIDADES*\n`;
+  msg += `Loja: ${currentConf.loja}\n`;
+  msg += `Data: ${dataHora}\n`;
+  msg += `Total: ${produtos.length} itens\n\n`;
+
+  if (retirados.length > 0) {
+    msg += `*RETIRADOS (${retirados.length}):*\n`;
+    for (const p of retirados) {
+      const qtdStr = p.qtd ? ` - ${p.qtd} un` : '';
+      msg += `- ${p.nome}${qtdStr}\n`;
+    }
+    msg += '\n';
+  }
+
+  if (sem.length > 0) {
+    msg += `*SEM ESTOQUE (${sem.length}):*\n`;
+    for (const p of sem) {
+      msg += `- ${p.nome}\n`;
+    }
+    msg += '\n';
+  }
+
+  msg += `*VALIDADE OK: ${ok.length} itens*`;
+
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function voltarInicio() {
+  location.href = location.origin + location.pathname;
+}
+
+// ─── Inicialização ─────────────────────────────────────────────────────────────
+
+// Preencher data fim com hoje
+const hoje = new Date().toISOString().split('T')[0];
+document.getElementById('data-fim').value = hoje;
+
+// Verificar se é link de conferência
+const params = new URLSearchParams(location.search);
+const confId = params.get('conf');
+if (confId) {
+  carregarConferencia(confId);
+}
 </script>
 </body>
 </html>
