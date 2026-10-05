@@ -448,12 +448,6 @@ function setEstado(idx, estado) {
   renderAbast();
   // Scroll para o próximo não conferido
   const proximo = produtos.findIndex((p, i) => i > idx && p.estado === null);
-  if (proximo >= 0) {
-    setTimeout(() => {
-      const el = document.getElementById(`card-${proximo}`);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-  }
 }
 
 function setQtd(idx, val) {
@@ -514,29 +508,34 @@ function enviarRelatorioWhats() {
   const now = new Date();
   const dataHora = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
 
-  let msg = `*CONFERENCIA DE VALIDADES*\n`;
-  msg += `Loja: ${currentConf.loja}\n`;
-  msg += `Data: ${dataHora}\n`;
-  msg += `Total: ${produtos.length} itens\n\n`;
+  const dataFimFmt = fmtDate(currentConf.dataFim);
+
+  let msg = `*${currentConf.loja}* - Conferencia de validade\n`;
+  msg += `📅 Vencidos ate ${dataFimFmt}\n\n`;
 
   if (retirados.length > 0) {
-    msg += `*RETIRADOS (${retirados.length}):*\n`;
+    msg += `✅ *Retirados (${retirados.length}):*\n`;
     for (const p of retirados) {
-      const qtdStr = p.qtd ? ` - ${p.qtd} un` : '';
+      const qtdStr = p.qtd ? ` - ${p.qtd} un.` : '';
       msg += `- ${p.nome}${qtdStr}\n`;
     }
     msg += '\n';
   }
 
-  if (sem.length > 0) {
-    msg += `*SEM ESTOQUE (${sem.length}):*\n`;
-    for (const p of sem) {
+  if (ok.length > 0) {
+    msg += `👍 *Validade ok (${ok.length}):*\n`;
+    for (const p of ok) {
       msg += `- ${p.nome}\n`;
     }
     msg += '\n';
   }
 
-  msg += `*VALIDADE OK: ${ok.length} itens*`;
+  if (sem.length > 0) {
+    msg += `🚫 *Sem estoque (${sem.length}):*\n`;
+    for (const p of sem) {
+      msg += `- ${p.nome}\n`;
+    }
+  }
 
   window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 }
